@@ -1,6 +1,6 @@
 // Implements the claude.ai artifact runtime API (db / user / assets) on top of Firebase.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithPopup, signInWithRedirect, GoogleAuthProvider, signOut }
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { initializeFirestore, persistentLocalCache, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, onSnapshot }
   from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
@@ -28,7 +28,7 @@ async function start() {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = initializeFirestore(app, { ignoreUndefinedProperties: true, localCache: persistentLocalCache() });
-  const user = await new Promise(res => onAuthStateChanged(auth, res));
+  const user = await new Promise(res => { const off = onAuthStateChanged(auth, x => { off(); res(x); }); });
   let u = user, lastErr = "";
   while (!u) {
     u = await new Promise(res => {
@@ -38,7 +38,7 @@ async function start() {
       document.getElementById("fb-in").onclick = async () => {
         const prov = new GoogleAuthProvider();
         try { res((await signInWithPopup(auth, prov)).user); }
-        catch (e) { console.error(e); if (e.code === "auth/popup-blocked") await signInWithRedirect(auth, prov); else { lastErr = e.code || String(e); res(null); } }
+        catch (e) { console.error(e); lastErr = e.code === "auth/popup-blocked" ? "เบราว์เซอร์บล็อกหน้าต่างล็อกอิน กรุณาอนุญาต pop-up ของเว็บนี้แล้วกดใหม่" : (e.code || String(e)); res(null); }
       };
     });
   }
