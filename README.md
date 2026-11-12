@@ -11,7 +11,7 @@
 3. Build → **Firestore Database** → Create database (production mode)
 4. Firestore → **Rules** → วางเนื้อหา `firestore.rules` (แก้ `PASTE_OWNER_GMAIL@gmail.com` เป็นอีเมลเจ้าของ) → Publish
 5. Project settings → Your apps → Web (`</>`) → คัดลอก config ไปใส่ `firebase-config.js` และใส่ `OWNER_EMAIL`
-6. เพิ่มคนขาย: Firestore → Start collection `sellers` → Document ID = **อีเมลคนขาย (ตัวพิมพ์เล็ก)** → ใส่ฟิลด์อะไรก็ได้ (เช่น `ok: true`)
+6. เพิ่มคนขาย: เข้าแอปด้วยบัญชีเจ้าของ → แท็บ “สรุป” → การ์ด “คนขายที่เข้าใช้ได้” → “+ เพิ่มคนขาย” (ใส่ Gmail ของคนขาย)
 7. Deploy บน Vercel (static ไม่ต้อง build)
 
 ## หมายเหตุ

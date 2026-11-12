@@ -12,6 +12,20 @@
    Here the same API is backed by Firebase (see firebase-adapter.js). */
 window.claude={use:async n=>(await import("./firebase-adapter.js")).use(n)};
 </script>
+<script>
+/* Owner-only card: manage which Google accounts may act as sellers (stored in Firestore `sellers/{email}`). */
+(()=>{let list=[],subbed=false;
+  window.sellerCard=()=>{
+    if(!subbed&&S.db&&S.realOwner){subbed=true;S.db.collection("sellers").onSnapshot(sn=>{list=sn.docs.map(d=>d.id).sort();if(typeof render==="function")render()},e=>console.error(e))}
+    return `<div class="card"><div class="row"><span>คนขายที่เข้าใช้ได้</span><strong>${list.length} คน</strong></div>
+    ${list.length?list.map(m=>`<div class="soldrow"><span>${esc(m)}</span><button class="btn ghost danger" data-sl="rm" data-email="${esc(m)}">ลบ</button></div>`).join(""):`<div class="small">ยังไม่มี เพิ่มอีเมล Gmail ของคนขายเพื่อให้เขาล็อกอินได้</div>`}
+    <div class="actions"><button class="btn primary" data-sl="add">+ เพิ่มคนขาย</button></div></div>`};
+  document.addEventListener("click",async e=>{const b=e.target.closest("[data-sl]");if(!b||!S.db)return;
+    if(b.dataset.sl==="add"){open(`<h2>เพิ่มคนขาย</h2><label>อีเมล Gmail ของคนขาย<input name="email" type="email" required placeholder="name@gmail.com" autocomplete="off"></label><p class="small" style="margin:0">คนขายล็อกอินด้วย Google ที่อีเมลนี้เท่านั้น</p>`,
+      async()=>{const m=body.elements.email.value.trim().toLowerCase();await guard(()=>S.db.collection("sellers").doc(m).set({at:Date.now()}),"เพิ่มคนขายแล้ว")})}
+    else if(b.dataset.sl==="rm"){const m=b.dataset.email;if(!await askConfirm("ลบ "+m+" ออกจากคนขาย?","ลบ"))return;guard(()=>S.db.collection("sellers").doc(m).delete(),"ลบคนขายแล้ว")}});
+})();
+</script>
 <style>
 :root{
   --bg:#F2F0FA;--surface:#FFFFFF;--surface2:#E9E6F7;--ink:#2E2A47;--muted:#5F5A7E;--line:#E1DDF2;
@@ -297,7 +311,7 @@ function vSummary(){
   for(const s of S.sales){if(!active(s)||!s.date)continue;const r=D(s.date),tot=saleTotal(s),c=saleCost(s,u),sh=ship(s),cm=saleComm(s)||0;r.orders++;r.pieces+=pcs(s);r.sales+=tot;r.cost+=c;r.ship+=sh;r.comm+=cm;r.profit+=tot-c-sh-cm}
   for(const [id,it] of Object.entries(S.items)){const d=dateOf(id);if(d)D(d).buy+=u[id]?.goods||0}
   const keys=Object.keys(days).sort().reverse().slice(0,90),lots=lotSort();
-  return `<h2>สรุปยอด</h2>${fxCard()}${pinCard()}${pend?`<div class="notice">มี ${pend} ล็อตที่ยังไม่ใส่ค่าส่งมาไทย ต้นทุนของล็อตนั้นยังเป็นตัวประมาณ</div>`:""}
+  return `<h2>สรุปยอด</h2>${fxCard()}${pinCard()}${sellerCard()}${pend?`<div class="notice">มี ${pend} ล็อตที่ยังไม่ใส่ค่าส่งมาไทย ต้นทุนของล็อตนั้นยังเป็นตัวประมาณ</div>`:""}
   <h3>วันนี้</h3><div class="grid g3">${stat("ยอดขาย",baht(d.sales))}${stat("กำไรขั้นต้น",pn(d.profit))}${stat(`ออเดอร์ · ${d.pieces} ชิ้น`,d.orders)}</div>
   <h3>เดือนนี้</h3><div class="grid">${stat("ยอดขาย",baht(m.sales))}${stat("กำไรขั้นต้น",pn(m.profit))}${stat(`ออเดอร์ · ${m.pieces} ชิ้น`,m.orders)}${stat("ค่าคอมคนขาย",baht(m.comm))}</div>
   <p class="small">กำไรขั้นต้น = ยอดขาย − ค่าสินค้า − ค่าคอม − ค่าส่งในไทย (ค่าส่งมาไทยหักในสรุปของแต่ละล็อต)</p>
