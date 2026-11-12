@@ -29,14 +29,16 @@ async function start() {
   const auth = getAuth(app);
   const db = initializeFirestore(app, { ignoreUndefinedProperties: true, localCache: persistentLocalCache() });
   const user = await new Promise(res => onAuthStateChanged(auth, res));
-  let u = user;
+  let u = user, lastErr = "";
   while (!u) {
     u = await new Promise(res => {
-      overlay(`<h2 style="margin:0">บัญชีร้าน US → ไทย</h2><button id="fb-in" style="${btn}">เข้าสู่ระบบด้วย Google</button>`);
+      const hint = lastErr.includes("unauthorized-domain") ? "โดเมนนี้ยังไม่ได้เพิ่มใน Firebase → Authentication → Settings → Authorized domains: " + location.hostname
+        : lastErr.includes("popup-closed") ? "หน้าต่างล็อกอินถูกปิดก่อนเสร็จ ลองอีกครั้ง" : lastErr;
+      overlay(`<h2 style="margin:0">บัญชีร้าน US → ไทย</h2>${hint ? `<p style="margin:0;color:#B8473F;font-size:14px">${hint}<br><small>${lastErr}</small></p>` : ""}<button id="fb-in" style="${btn}">เข้าสู่ระบบด้วย Google</button>`);
       document.getElementById("fb-in").onclick = async () => {
         const prov = new GoogleAuthProvider();
         try { res((await signInWithPopup(auth, prov)).user); }
-        catch (e) { if (e.code === "auth/popup-blocked") await signInWithRedirect(auth, prov); else res(null); }
+        catch (e) { console.error(e); if (e.code === "auth/popup-blocked") await signInWithRedirect(auth, prov); else { lastErr = e.code || String(e); res(null); } }
       };
     });
   }
