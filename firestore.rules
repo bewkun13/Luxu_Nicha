@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Replace with the owner's Google email (must match OWNER_EMAIL in firebase-config.js)
+    function owner() { return request.auth != null && request.auth.token.email == "PASTE_OWNER_GMAIL@gmail.com" && request.auth.token.email_verified; }
+    function seller() { return request.auth != null && exists(/databases/$(database)/documents/sellers/$(request.auth.token.email)); }
+    function interact() { return owner() || seller(); }
+
+    // who may act as a seller: owner manages the list; a user may read only their own entry
+    match /sellers/{email} { allow read: if owner() || (request.auth != null && request.auth.token.email == email); allow write: if owner(); }
+
+    // seller can read, only owner writes
+    match /items/{id}        { allow read: if interact(); allow write: if owner(); }
+    match /sales/{id}        { allow read: if interact(); allow write: if owner(); }
+    match /commissions/{id}  { allow read: if interact(); allow write: if owner(); }
+    match /photos/{id}       { allow read: if interact(); allow write: if owner(); }
+
+    // seller and owner both read + write
+    match /sellerOrders/{id} { allow read, write: if interact(); }
+    match /payments/{id}     { allow read, write: if interact(); }
+    match /slips/{id}        { allow read, write: if interact(); }
+    match /slipFull/{id}     { allow read, write: if interact(); }
+
+    // owner only: cost data is never readable by sellers
+    match /lots/{id}          { allow read, write: if owner(); }
+    match /itemCosts/{id}     { allow read, write: if owner(); }
+    match /saleCosts/{id}     { allow read, write: if owner(); }
+    match /ownerSettings/{id} { allow read, write: if owner(); }
+  }
+}

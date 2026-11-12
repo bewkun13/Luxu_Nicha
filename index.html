@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>บัญชีร้าน US → ไทย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+/* Runtime shim: the app was written for the claude.ai artifact runtime (claude.use("db"|"user"|"assets")).
+   Here the same API is backed by Firebase (see firebase-adapter.js). */
+window.claude={use:async n=>(await import("./firebase-adapter.js")).use(n)};
+</script>
+<style>
+:root{
+  --bg:#F2F0FA;--surface:#FFFFFF;--surface2:#E9E6F7;--ink:#2E2A47;--muted:#5F5A7E;--line:#E1DDF2;
+  --pri:#C9C2F4;--pri-ink:#2E2763;--pri-text:#5B50C2;--pri-soft:#E6E2FA;
+  --mint:#DDF3E7;--peach:#FDE6DA;--sky:#DCEBFB;
+  --green:#2C7A55;--green-soft:#DDF3E7;--red:#B8473F;--red-soft:#FBE2E2;--amber:#8F6410;--amber-soft:#FFF1CE;
+  color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Anuphan","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif;font-size:17px;line-height:1.55;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input,select{font:inherit;color:inherit}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg)}
+.head{max-width:680px;margin:0 auto;padding:16px 20px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.head h1{font-size:19px;margin:0;font-weight:700;color:var(--ink)}
+.role{font-size:13px;padding:4px 12px;border-radius:999px;background:var(--pri-soft);color:var(--pri);font-weight:600;white-space:nowrap}
+main{max-width:680px;margin:0 auto;padding:6px 20px 120px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav .in{max-width:680px;margin:0 auto;display:flex}
+nav button{flex:1;border:0;background:none;padding:10px 4px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:62px}
+nav button[aria-current="page"]{color:var(--pri);font-weight:700}
+nav svg{width:24px;height:24px;stroke-width:1.8}
+nav button[aria-current="page"] svg{stroke-width:2.2}
+h2{font-size:30px;margin:4px 0 16px;font-weight:700;line-height:1.25}
+h3{font-size:15px;margin:28px 0 10px;font-weight:600;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:600px){.grid.g3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:599px){.grid.g3>:nth-child(3){grid-column:1/-1}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.stat .k{font-size:14px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:700;margin-top:4px;word-break:break-word}
+.stat.wide{grid-column:1/-1}
+.stat.alert{background:var(--amber-soft);border-color:transparent}.stat.alert .v{color:var(--amber)}
+.stat.good{background:var(--green-soft);border-color:transparent}
+.pos{color:var(--green)}.neg{color:var(--red)}.warn{color:var(--amber);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.small{font-size:14px;color:var(--muted)}
+.line{font-size:15px;margin-top:3px;color:var(--muted)}.line b{color:var(--ink);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--surface2);color:var(--muted)}
+.chip.ok{background:var(--green-soft);color:var(--green)}
+.chip.wait{background:var(--amber-soft);color:var(--amber)}
+.chip.bad{background:var(--red-soft);color:var(--red)}
+button.chip{border:1px solid var(--line);cursor:pointer;font-weight:600;padding:8px 12px;background:var(--surface);color:var(--ink)}
+.badge{font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 18px;font-weight:600;cursor:pointer;font-size:15px;min-height:44px}
+.btn.primary{background:var(--pri);border-color:var(--pri);color:var(--pri-ink)}
+.btn.danger{color:var(--red)}.btn.ghost{border-color:transparent;background:none}
+.btn:disabled{opacity:.5}
+.btn:focus-visible,nav button:focus-visible,input:focus-visible,select:focus-visible,.lotrow:focus-visible,.back:focus-visible,.seg button:focus-visible,summary:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px}
+.toolbar h2{margin:0}.toolbar h3{margin:0}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:600px}
+th,td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:500}
+tr:last-child td{border-bottom:0}
+.empty{text-align:center;padding:32px 20px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:16px}
+.notice{padding:12px 16px;border-radius:12px;background:var(--amber-soft);color:var(--amber);margin-bottom:12px;font-size:15px}
+dialog{border:0;padding:0;border-radius:20px;width:min(540px,calc(100vw - 16px));max-height:calc(100dvh - 32px);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(35,30,55,.4)}
+.dlg{padding:22px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.dlg h2{margin:0;font-size:22px}
+.dlg h3{margin:6px 0 0}
+label{display:block;font-size:14px;color:var(--muted);font-weight:500}
+input,select{width:100%;margin-top:5px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:17px;min-height:50px;color:var(--ink)}
+input:focus,select:focus{border-color:var(--pri);outline:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item{border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--bg)}
+.item .full{grid-column:1/-1}
+.preview{font-size:15px;background:var(--pri-soft);border-radius:12px;padding:12px 14px}
+.check{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--ink)}
+.check input{width:24px;height:24px;min-height:0;margin:0;accent-color:var(--pri)}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:12px 20px;border-radius:12px;font-size:15px;z-index:20;max-width:90vw;display:none}
+.inline{display:flex;gap:8px;align-items:center;margin-top:10px}.inline input{margin:0;max-width:150px}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.thumb{width:60px;height:60px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);cursor:pointer;padding:0;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.prodrow{display:flex;gap:14px;align-items:flex-start}.prodrow .grow{flex:1;min-width:0}
+.pic{width:72px;height:72px;flex:none;border-radius:12px;border:0;background:var(--surface2);overflow:hidden;display:grid;place-items:center;color:var(--muted);font-size:12px;cursor:pointer;padding:0}
+.pic img{width:100%;height:100%;object-fit:cover}
+.photolabel{font-size:13px;color:var(--muted);width:100%}
+#viewer{width:min(720px,calc(100vw - 16px))}
+#viewer img{display:block;max-width:100%;max-height:calc(100dvh - 160px);margin:0 auto;object-fit:contain;border-radius:12px}
+.lotrow{cursor:pointer;width:100%;text-align:left;display:block;font:inherit;color:inherit}
+.mini3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.mini3 div{display:flex;flex-direction:column}.mini3 span{font-size:12px;color:var(--muted)}.mini3 b{font-size:16px;font-weight:600}
+.kv{display:grid;grid-template-columns:1fr auto;gap:7px 0;font-size:15px}.kv>span:nth-child(odd){color:var(--muted)}.kv .r{text-align:right;padding-left:12px}
+.kv .t{border-top:1px solid var(--line);padding-top:9px;margin-top:3px;font-weight:600;color:var(--ink)!important}
+.back{border:0;background:none;color:var(--pri);font-weight:600;padding:4px 0;cursor:pointer;font-size:15px;min-height:40px}
+.datehead{font-size:13px;font-weight:600;color:var(--muted);margin:18px 0 8px 4px}
+.qty{font-weight:600;white-space:nowrap;font-size:15px;color:var(--pri)}
+.lotstats{margin-bottom:10px}
+.seg{display:flex;background:var(--surface2);border-radius:12px;padding:4px;gap:4px;margin:4px 0 6px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:9px 6px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;min-height:40px}
+.seg button span{font-weight:500;opacity:.7}
+.seg button[aria-selected="true"]{background:var(--surface);color:var(--ink)}
+.soldout{opacity:.6}
+details.sold{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+details.sold summary{cursor:pointer;font-size:14px;font-weight:600;list-style:none;padding:4px 0}
+details.sold summary::-webkit-details-marker{display:none}
+details.sold summary::after{content:" ›";color:var(--muted)}details.sold[open] summary::after{content:" ⌄"}
+.soldrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:14px;border-bottom:1px dashed var(--line)}.soldrow:last-child{border-bottom:0}.soldrow .r{text-align:right;white-space:nowrap}
+.thumbs .btn{min-height:38px;padding:6px 14px;font-size:14px}.thumbs{gap:6px 8px;margin-top:10px}
+.moneyline{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--pri-soft);font-size:15px}.moneyline b{font-size:17px;color:var(--pri)}
+button.role{border:0;cursor:pointer;font-family:inherit;min-height:40px;padding:6px 14px}
+button.role:disabled{cursor:default;opacity:1;min-height:0;padding:4px 12px;color:var(--pri)}
+.previewbar{background:var(--amber-soft);color:var(--amber);padding:10px 14px;border-radius:12px;margin-bottom:12px;font-size:14px}
+/* ---- minimal pastel (flat colours only) ---- */
+.head h1{display:flex;align-items:center;gap:10px;font-size:18px;letter-spacing:.01em}
+.logo{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:11px;background:var(--pri);color:var(--pri-ink);flex:none}
+.role,button.role:disabled{background:var(--pri-soft);color:var(--pri-text);font-weight:600}
+nav button[aria-current="page"]{color:var(--pri-text)}
+nav button[aria-current="page"] svg{background:var(--pri-soft);border-radius:999px;padding:4px 18px;box-sizing:content-box;margin:-4px 0}
+h2{font-size:28px;letter-spacing:-.01em}
+h3{font-size:14px;letter-spacing:.02em;margin:26px 0 10px}
+.card,.stat,.tablewrap,.empty{border-radius:20px}
+.stat{border:0}
+.grid .stat:nth-child(3n+1){background:var(--pri-soft)}
+.grid .stat:nth-child(3n+2){background:var(--mint)}
+.grid .stat:nth-child(3n){background:var(--peach)}
+.grid .stat.alert{background:var(--amber-soft)}.grid .stat.good{background:var(--mint)}
+.stat .k{color:var(--muted)}
+.btn{border-radius:999px;font-weight:600}
+.btn.primary{background:var(--pri);border-color:var(--pri);color:var(--pri-ink);font-weight:700}
+.chip{background:var(--sky);color:#3C5E86}
+.chip.ok{background:var(--green-soft);color:var(--green)}.chip.wait{background:var(--amber-soft);color:var(--amber)}.chip.bad{background:var(--red-soft);color:var(--red)}
+.badge{background:var(--peach);color:#8C4F37}
+.qty,.back{color:var(--pri-text)}
+.preview{background:var(--pri-soft);border-radius:16px}
+.moneyline b{color:var(--pri-text)}
+.seg{background:var(--pri-soft)}
+.pic,.thumb{background:var(--pri-soft)}
+th{background:#F6F4FD}
+input:focus,select:focus{border-color:var(--pri-text)}
+.btn:focus-visible,nav button:focus-visible,input:focus-visible,select:focus-visible,.lotrow:focus-visible,.back:focus-visible,.seg button:focus-visible,summary:focus-visible{outline-color:var(--pri-text)}
+.check input{accent-color:var(--pri-text)}
+button.chip{background:var(--surface);color:var(--ink)}
+dialog{border-radius:24px}
+dialog::backdrop{background:rgba(46,42,71,.35)}
+.previewbar{border-radius:14px}
+#cdlg{width:min(420px,calc(100vw - 32px))}
+.canceled{opacity:.62}.canceled .row strong:last-child{text-decoration:line-through}
+.lock{position:fixed;inset:0;z-index:300;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.lock[hidden]{display:none}
+.lockbox{display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;max-width:320px}
+.lockbox .logo{width:56px;height:56px;border-radius:18px}
+.lockbox h2{font-size:20px;margin:0;text-align:center;line-height:1.4}
+.dots{display:flex;gap:16px;min-height:16px}.dots[hidden]{display:none}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--pri-text);box-sizing:border-box}.dots i.on{background:var(--pri-text)}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:14px;justify-content:center}.pad[hidden]{display:none}
+.pad button{height:76px;border-radius:50%;border:0;background:var(--surface);font-size:28px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit}
+.pad button:active{background:var(--pri-soft)}.pad button:disabled{opacity:.4}
+.pad button:focus-visible{outline:2px solid var(--pri-text);outline-offset:2px}
+</style>
+
+</head>
+<body>
+<header><div class="head"><h1><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg></span>บัญชีร้าน US → ไทย</h1><button type="button" class="role" id="role" disabled>กำลังโหลด…</button></div></header>
+<main id="main"><div class="empty">กำลังโหลดข้อมูล…</div></main>
+<nav><div class="in" id="nav"></div></nav>
+<dialog id="dlg"><form method="dialog" class="dlg" id="dlgbody"></form></dialog>
+<dialog id="viewer"><div class="dlg"><img id="vimg" alt="รูปที่แนบ"><div class="two" id="vact"></div></div></dialog>
+<dialog id="cdlg"><div class="dlg"><h2 id="cmsg" style="font-size:19px;line-height:1.4"></h2><div class="two"><button type="button" class="btn" id="ccancel">ย้อนกลับ</button><button type="button" class="btn primary" id="cok">ยืนยัน</button></div></div></dialog>
+<div id="lock" class="lock" hidden><div class="lockbox"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><h2 id="lockmsg">กำลังโหลด…</h2><div id="lockdots" class="dots" hidden></div>
+<div id="lockpad" class="pad" hidden><button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><span></span><button type="button" data-k="0">0</button><button type="button" data-k="del" aria-label="ลบตัวเลข">⌫</button></div>
+<button type="button" class="btn ghost" id="lockcancel">ยกเลิก</button><p class="small" style="margin:0;text-align:center">ลืม PIN? ลบฟิลด์ pin ในเอกสาร ownerSettings/main บน Firebase Console</p></div></div>
+<input type="file" id="picker" accept="image/*" hidden>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const S={pinReady:false,pinPrompt:false,unlocked:false,pinBuf:"",pinErr:false,fails:0,lockUntil:0,lastActive:Date.now(),comm:{},u:null,ready:{},realOwner:false,preview:false,itemFilter:"all",db:null,assets:null,owner:false,myId:null,offline:false,noDb:false,
+  lots:{},items:{},itemCosts:{},sales:[],saleCosts:{},slips:[],pay:{},rawSales:[],rawSeller:[],ownerSettings:{},view:null,lotId:null};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>(Math.round((+n||0)*100)/100).toLocaleString("th-TH",{minimumFractionDigits:0,maximumFractionDigits:2});
+const baht=n=>fmt(n)+" ฿";
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const thDate=s=>{if(!s)return"";const [y,m,d]=s.split("-");return `${+d}/${+m}/${y}`};
+const month=()=>today().slice(0,7);
+function toast(t){const e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",3200)}
+async function guard(fn,ok){try{await fn();if(ok)toast(ok)}catch(e){console.error(e);toast(e&&e.code==="quota_exceeded"?"พื้นที่เก็บข้อมูลเต็ม ลบรายการเก่าบางส่วนก่อน":"บันทึกไม่สำเร็จ ลองอีกครั้ง")}}
+const src=id=>(window.__photos||{})[id]||"";
+
+/* ---------- photos ---------- */
+async function shrink(file){try{const bmp=await createImageBitmap(file);const k=Math.min(1,1600/Math.max(bmp.width,bmp.height));
+  const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+  return await new Promise(r=>c.toBlob(b=>r(b||file),"image/jpeg",0.82))}catch(e){return file}}
+async function uploadPhoto(file){if(!S.assets){toast("แนบรูปไม่ได้ในหน้านี้");return null}
+  toast("กำลังอัปโหลดรูป…");try{const r=await S.assets.upload(await shrink(file));return r.id}catch(e){console.error(e);toast(e&&e.code==="quota_exceeded"?"พื้นที่เก็บรูปเต็ม":"อัปโหลดรูปไม่สำเร็จ ลองอีกครั้ง");return null}}
+function viewPhoto(id,saleId,field){$("#vimg").src=src(id);const del=S.owner&&saleId;
+  $("#vact").innerHTML=`<button class="btn" data-vclose>ปิด</button>`+(del?`<button class="btn danger" data-vdel="${esc(id)}" data-sid="${esc(saleId)}" data-field="${field}">ลบรูปนี้</button>`:"");
+  $("#vact").style.gridTemplateColumns=del?"":"1fr";$("#viewer").showModal()}
+
+/* ---------- payment slips (stored inline so the seller needs no upload permission) ---------- */
+async function toJpeg(file,max,q){const bmp=await createImageBitmap(file);const k=Math.min(1,max/Math.max(bmp.width,bmp.height));
+  const c=document.createElement("canvas");c.width=Math.max(1,Math.round(bmp.width*k));c.height=Math.max(1,Math.round(bmp.height*k));c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);return c.toDataURL("image/jpeg",q)}
+async function makeSlip(file){let max=1100,q=.72,full="";
+  for(let i=0;i<10;i++){full=await toJpeg(file,max,q);if(full.length<215000)break;if(q>.45)q-=.09;else max=Math.round(max*.82)}
+  if(full.length>=235000)throw {code:"too_big"};return {full,thumb:await toJpeg(file,160,.62)}}
+async function addSlip(saleId,file){toast("กำลังบันทึกสลิป…");
+  try{const {full,thumb}=await makeSlip(file),ref=S.db.collection("slips").doc();
+    await S.db.collection("slipFull").doc(ref.id).set({img:full});await ref.set({saleId,thumb,at:Date.now(),by:S.myId||""});toast("แนบสลิปแล้ว")}
+  catch(e){console.error(e);toast(e&&e.code==="too_big"?"รูปใหญ่เกินไป ลองถ่ายหรือครอปใหม่":e&&e.code==="quota_exceeded"?"พื้นที่เก็บข้อมูลเต็ม แจ้งเจ้าของร้าน":e&&e.code==="invalid_argument"?"คุณไม่มีสิทธิ์แนบสลิป แจ้งเจ้าของร้าน":"แนบสลิปไม่สำเร็จ ลองอีกครั้ง")}}
+async function viewSlip(id){const sl=S.slips.find(x=>x.id===id);if(!sl)return;$("#vimg").src=sl.thumb;
+  $("#vact").innerHTML=`<button class="btn" data-vclose>ปิด</button>`+(S.owner?`<button class="btn danger" data-slipdel="${esc(id)}">ลบสลิปนี้</button>`:"");
+  $("#vact").style.gridTemplateColumns=S.owner?"":"1fr";$("#viewer").showModal();
+  try{const d=await S.db.collection("slipFull").doc(id).get();if(d.exists&&$("#viewer").open)$("#vimg").src=d.data().img}catch(e){console.error(e)}}
+const slipsOf=sid=>S.slips.filter(x=>x.saleId===sid).sort((a,b)=>(a.at||0)-(b.at||0));
+
+/* ---------- exchange rate ---------- */
+const FX_LINK="https://www.google.com/search?q=USD+to+THB";
+const fxLink=`<a href="${FX_LINK}" target="_blank" rel="noopener" style="color:var(--blue)">เช็กอัตราตอนนี้</a>`;
+const fxToday=()=>{const t=S.ownerSettings.fxAt;return !!t&&new Date(t).toDateString()===new Date().toDateString()};
+const fxWhen=()=>{const t=S.ownerSettings.fxAt;if(!t)return"";const d=new Date(t);return `${d.getDate()}/${d.getMonth()+1} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`};
+function fxCard(){const fx=S.ownerSettings.fx,old=!fxToday();
+  return `<div class="card" style="${old?"background:var(--amber-soft);border-color:transparent":""}"><div class="row"><span>อัตราแลกเปลี่ยนที่ใช้</span><strong>${fx?fmt(fx)+" บาท/USD":"ยังไม่ได้ตั้ง"}</strong></div>
+  <div class="small">${fx?`อัปเดตล่าสุด ${fxWhen()}${old?" · ยังไม่ได้อัปเดตของวันนี้":" · อัปเดตของวันนี้แล้ว"}`:"ตั้งอัตราก่อนเพิ่มสินค้า"}</div>
+  <div class="actions"><button class="btn" data-act="fx">อัปเดตอัตรา</button></div></div>`}
+function fxDialog(){open(`<h2>อัปเดตอัตราแลกเปลี่ยนของวันนี้</h2>
+  <p class="small" style="margin:0">ระบบดึงอัตราจากอินเทอร์เน็ตเองไม่ได้ กด ${fxLink} แล้วนำตัวเลขมาใส่ ถ้าจ่ายด้วยบัตร ใช้อัตราจากแอปบัตรจะตรงกว่า</p>
+  <label>บาทต่อ 1 USD<input name="fx" type="number" inputmode="decimal" min="0.01" step="any" required value="${S.ownerSettings.fx??""}" placeholder="เช่น 33.5"></label>`,
+  async()=>{const v=+body.elements.fx.value;await guard(()=>S.db.collection("ownerSettings").doc("main").set({...S.ownerSettings,fx:v,fxAt:Date.now()}),"อัปเดตอัตราแล้ว")})}
+
+function rebuildSales(){S.sales=[...S.rawSales.map(d=>({...d,_col:"sales"})),...S.rawSeller.map(d=>({...d,_col:"sellerOrders"}))].map(s=>({...s,paid:(s.id in S.pay)?!!S.pay[s.id].paid:!!s.paid}))}
+/* ---------- calculations ---------- */
+const v2=s=>s.v===2;
+const active=s=>v2(s)&&s.status!=="cancelled";
+const pcs=s=>(s.items||[]).reduce((a,i)=>a+(+i.qty||0),0);
+const saleTotal=s=>(s.items||[]).reduce((a,i)=>a+(+i.qty||0)*(+i.price||0),0);
+const costFor=i=>{const x=S.u&&S.u[i.itemId];return x?x.unit:null};
+const lineComm=(s,i)=>{if(s.noComm)return 0;const c=costFor(i);if(c==null)return null;return Math.max(0,((+i.price||0)-c)*(+i.qty||0))*(+i.pct||0)/100};
+function saleComm(s){if(s.noComm)return 0;
+  if(S.u){let t=0,ok=true;for(const i of s.items||[]){const v=lineComm(s,i);if(v==null)ok=false;else t+=v}if(ok)return t}
+  const d=s.id?S.comm[s.id]:null;return d&&typeof d.amount==="number"?d.amount:null}
+const ship=s=>+(S.saleCosts[s.id]?.ship)||0;
+function soldMap(excl){const q={};for(const s of S.sales)if(active(s)&&s.id!==excl)for(const i of s.items||[])q[i.itemId]=(q[i.itemId]||0)+(+i.qty||0);return q}
+function salesByItem(){const m={};for(const s of S.sales)if(active(s))for(const i of s.items||[])(m[i.itemId]=m[i.itemId]||[]).push({s,qty:+i.qty||0,price:+i.price||0});for(const k in m)m[k].sort((a,b)=>(b.s.date||"").localeCompare(a.s.date||""));return m}
+const lotItems=lid=>Object.entries(S.items).filter(([,it])=>it.lotId===lid);
+const lotFx=l=>+(l&&l.fx)||0;
+const fxOf=id=>{const it=S.items[id]||{};return lotFx(S.lots[it.lotId])||+(S.itemCosts[id]||{}).fx||+S.ownerSettings.fx||0};
+const dateOf=id=>{const it=S.items[id]||{},l=S.lots[it.lotId];return (l&&l.buyDate)||(S.itemCosts[id]||{}).buyDate||""};
+function unitCosts(){const u={};for(const [id,it] of Object.entries(S.items)){const c=S.itemCosts[id]||{},q=+it.qty||0,goods=(+c.usd||0)*q*fxOf(id);u[id]={goods,unit:q?goods/q:0}}return u}
+const saleCost=(s,u)=>(s.items||[]).reduce((a,i)=>a+(u[i.itemId]?.unit||0)*(+i.qty||0),0);
+function lotStats(lid,u,sold){
+  const its=lotItems(lid),lot=S.lots[lid]||{};let goods=0,usd=0,pieces=0,soldP=0,remainVal=0;
+  for(const [id,it] of its){const c=S.itemCosts[id]||{};usd+=(+c.usd||0)*(+it.qty||0);goods+=u[id]?.goods||0;pieces+=+it.qty||0;const sq=sold[id]||0;soldP+=sq;remainVal+=Math.max(0,(+it.qty||0)-sq)*(u[id]?.unit||0)}
+  const ids=new Set(its.map(([id])=>id));let rev=0,comm=0,dship=0,cogs=0;
+  for(const s of S.sales){if(!active(s))continue;const st=saleTotal(s);for(const i of s.items||[]){if(!ids.has(i.itemId))continue;
+    const line=(+i.qty||0)*(+i.price||0);rev+=line;comm+=lineComm(s,i)||0;dship+=st?ship(s)*line/st:0;cogs+=(u[i.itemId]?.unit||0)*(+i.qty||0)}}
+  const shipT=lot.ship!=null?+lot.ship:0,invest=goods+shipT,netIn=rev-comm-dship;
+  return {usd,goods,ship:shipT,shipKnown:lot.ship!=null,invest,pieces,soldP,rev,comm,dship,cogs,netIn,gross:netIn-cogs,result:netIn-invest,remainVal}}
+
+/* ---------- nav & render ---------- */
+const IC={chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',receipt:'<path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/>',wallet:'<rect x="2" y="6" width="20" height="14" rx="3"/><path d="M16 13h2M2 10h20"/>',cart:'<path d="M3 4h2l2.5 11h11L21 7H6.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>'};
+const icon=k=>`<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+const OWNER_TABS=[["summary","สรุป","chart"],["lots","ล็อต","box"],["sales","ออเดอร์","receipt"]];
+const SELLER_TABS=[["mine","ยอดของฉัน","wallet"],["sales","ออเดอร์","receipt"],["stock","สินค้า","box"]];
+function renderNav(){const t=S.owner?OWNER_TABS:SELLER_TABS;if(!t.find(x=>x[0]===S.view))S.view=t[0][0];
+  $("#nav").innerHTML=t.map(([k,l,i])=>`<button data-tab="${k}" ${k===S.view?'aria-current="page"':""}>${icon(i)}<span>${l}</span></button>`).join("")}
+function render(){S.u=S.realOwner?unitCosts():null;lockRender();renderNav();const rb=$("#role");rb.disabled=!S.realOwner;
+  rb.textContent=S.realOwner?(S.owner?"‹ หน้าคนขาย":"ไปหน้าแอดมิน ›"):"คนขาย";
+  rb.setAttribute("aria-label",S.realOwner?(S.owner?"กลับไปหน้าคนขาย":"เข้าหน้าแอดมิน ต้องใส่ PIN ถ้าตั้งไว้"):"บทบาทของคุณ");const m=$("#main");
+  if(S.noDb){m.innerHTML=`<div class="notice">ยังเชื่อมต่อฐานข้อมูลไม่ได้ ตรวจสอบการตั้งค่า Firebase (firebase-config.js)</div>`;return}
+  const off=(S.offline?`<div class="notice">ยังเชื่อมต่อข้อมูลไม่ได้ ตัวเลขที่เห็นอาจไม่ใช่ล่าสุด</div>`:"");
+  const v={summary:vSummary,lots:()=>S.lotId&&S.lots[S.lotId]?vLot(S.lotId):vLots(),sales:vSales,mine:vMine,stock:vStock}[S.view];
+  m.innerHTML=off+(v?v():"")}
+const stat=(k,v,cls="")=>`<div class="stat ${cls}"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+const pn=n=>`<span class="${n<0?"neg":"pos"}">${baht(n)}</span>`;
+const statusChip=l=>l.closed?`<span class="chip">ปิดรอบแล้ว</span>`:l.ship!=null?`<span class="chip ok">ถึงไทยแล้ว</span>`:`<span class="chip wait">กำลังซื้อ ยังไม่ส่งมาไทย</span>`;
+const lotSort=()=>Object.entries(S.lots).sort(([,a],[,b])=>(!!a.closed-!!b.closed)||(b.createdAt||0)-(a.createdAt||0));
+
+function vSummary(){
+  const u=unitCosts(),sold=soldMap(),t=today(),mo=month();
+  const agg=f=>{let r={sales:0,profit:0,orders:0,pieces:0,comm:0};for(const s of S.sales){if(!active(s)||!f(s.date))continue;
+    const tot=saleTotal(s),c=saleComm(s)||0;r.sales+=tot;r.comm+=c;r.orders++;r.pieces+=pcs(s);r.profit+=tot-saleCost(s,u)-ship(s)-c}return r};
+  const d=agg(x=>x===t),m=agg(x=>x&&x.startsWith(mo));
+  const pend=Object.values(S.lots).filter(l=>l.ship==null&&!l.closed).length;
+  const days={};const D=k=>days[k]||(days[k]={orders:0,pieces:0,sales:0,cost:0,ship:0,comm:0,profit:0,buy:0});
+  for(const s of S.sales){if(!active(s)||!s.date)continue;const r=D(s.date),tot=saleTotal(s),c=saleCost(s,u),sh=ship(s),cm=saleComm(s)||0;r.orders++;r.pieces+=pcs(s);r.sales+=tot;r.cost+=c;r.ship+=sh;r.comm+=cm;r.profit+=tot-c-sh-cm}
+  for(const [id,it] of Object.entries(S.items)){const d=dateOf(id);if(d)D(d).buy+=u[id]?.goods||0}
+  const keys=Object.keys(days).sort().reverse().slice(0,90),lots=lotSort();
+  return `<h2>สรุปยอด</h2>${fxCard()}${pinCard()}${pend?`<div class="notice">มี ${pend} ล็อตที่ยังไม่ใส่ค่าส่งมาไทย ต้นทุนของล็อตนั้นยังเป็นตัวประมาณ</div>`:""}
+  <h3>วันนี้</h3><div class="grid g3">${stat("ยอดขาย",baht(d.sales))}${stat("กำไรขั้นต้น",pn(d.profit))}${stat(`ออเดอร์ · ${d.pieces} ชิ้น`,d.orders)}</div>
+  <h3>เดือนนี้</h3><div class="grid">${stat("ยอดขาย",baht(m.sales))}${stat("กำไรขั้นต้น",pn(m.profit))}${stat(`ออเดอร์ · ${m.pieces} ชิ้น`,m.orders)}${stat("ค่าคอมคนขาย",baht(m.comm))}</div>
+  <p class="small">กำไรขั้นต้น = ยอดขาย − ค่าสินค้า − ค่าคอม − ค่าส่งในไทย (ค่าส่งมาไทยหักในสรุปของแต่ละล็อต)</p>
+  <h3>สรุปแต่ละล็อต</h3>${lots.length?`<div class="tablewrap"><table><thead><tr><th>ล็อต</th><th>ขายแล้ว</th><th>เงินลงทุน</th><th>ได้เงินสุทธิ</th><th>ผลของรอบ</th><th>ทุนคืนแล้ว</th></tr></thead><tbody>${
+    lots.map(([id,l])=>{const x=lotStats(id,u,sold);return `<tr><td><button class="back" data-lot="${id}">${esc(l.name)}</button></td><td>${x.soldP}/${x.pieces}</td><td>${fmt(x.invest)}</td><td>${fmt(x.netIn)}</td><td class="${x.result<0?"neg":"pos"}">${fmt(x.result)}</td><td>${x.invest?Math.round(x.netIn/x.invest*100)+"%":"-"}</td></tr>`}).join("")}</tbody></table></div>`:`<div class="empty">ยังไม่มีล็อต เริ่มที่แท็บ “ล็อต”</div>`}
+  <h3>รายวัน</h3>${keys.length?`<div class="tablewrap"><table><thead><tr><th>วันที่</th><th>ออเดอร์</th><th>ชิ้น</th><th>ยอดขาย</th><th>ต้นทุนสินค้า</th><th>ค่าส่งในไทย</th><th>ค่าคอม</th><th>กำไรขั้นต้น</th><th>ซื้อของ</th></tr></thead><tbody>${
+    keys.map(k=>{const r=days[k];return `<tr><td>${thDate(k)}</td><td>${r.orders}</td><td>${r.pieces}</td><td>${fmt(r.sales)}</td><td>${fmt(r.cost)}</td><td>${fmt(r.ship)}</td><td>${fmt(r.comm)}</td><td class="${r.profit<0?"neg":""}">${fmt(r.profit)}</td><td>${fmt(r.buy)}</td></tr>`}).join("")}</tbody></table></div>`:`<div class="empty">ยังไม่มีการซื้อหรือขาย</div>`}`}
+
+function vLots(){const lots=lotSort(),u=unitCosts(),sold=soldMap();
+  return `<div class="toolbar"><h2>ล็อต</h2><button class="btn primary" data-act="newLot">สร้างล็อตใหม่</button></div>
+  ${lots.length?lots.map(([id,l])=>{const x=lotStats(id,u,sold);return `<button class="card lotrow" data-lot="${id}"><div class="row"><strong>${esc(l.name)}</strong><span>${x.soldP}/${x.pieces} ชิ้น</span></div>
+   <div class="chips">${statusChip(l)}</div><div class="mini3"><div><span>ลงทุน</span><b>${baht(x.invest)}</b></div><div><span>ได้เงินสุทธิ</span><b>${baht(x.netIn)}</b></div><div><span>ผลของรอบ</span><b>${pn(x.result)}</b></div></div></button>`}).join(""):
+   `<div class="empty">ยังไม่มีล็อต กด “สร้างล็อตใหม่” แล้วเพิ่มสินค้าที่ซื้อทีละชิ้น</div>`}`}
+
+function vLot(lid){const l=S.lots[lid],u=unitCosts(),sold=soldMap(),x=lotStats(lid,u,sold);
+  const its=lotItems(lid).sort(([a,ia],[b,ib])=>dateOf(b).localeCompare(dateOf(a))||(ib.createdAt||0)-(ia.createdAt||0));
+  const kv=(k,v,c="")=>`<span class="${c}">${k}</span><span class="${c} r">${v}</span>`;
+  const sb=salesByItem(),cnt={all:its.length,left:its.filter(([id,it])=>(+it.qty||0)-(sold[id]||0)>0).length,sold:its.filter(([id])=>sold[id]).length};
+  const F=S.itemFilter,shown=its.filter(([id,it])=>F==="left"?(+it.qty||0)-(sold[id]||0)>0:F==="sold"?!!sold[id]:true);
+  const seg=`<div class="seg" role="tablist">${[["all","ทั้งหมด"],["left","ยังเหลือ"],["sold","ขายแล้ว"]].map(([k,l])=>`<button role="tab" data-filter="${k}" aria-selected="${F===k}">${l} <span>${cnt[k]}</span></button>`).join("")}</div>`;
+  let lastDate=null;const rows=shown.map(([id,it])=>{const c=S.itemCosts[id]||{},sq=sold[id]||0,left=(+it.qty||0)-sq,unit=u[id]?.unit||0,per=it.price?it.price-unit-Math.max(0,it.price-unit)*(+it.pct||0)/100:null,sl=sb[id]||[];
+    const head=(!l.buyDate&&dateOf(id)!==lastDate)?`<div class="datehead">ซื้อวันที่ ${thDate(dateOf(id))}</div>`:"";lastDate=dateOf(id);
+    return head+`<div class="card item-card ${left?"":"soldout"}"><div class="prodrow">${it.photo?`<button class="pic" data-view="${esc(it.photo)}" aria-label="ดูรูป"><img src="${src(it.photo)}" alt="" loading="lazy"></button>`:`<div class="pic">ไม่มีรูป</div>`}<div class="grow">
+    <div class="row"><strong>${esc(it.name)}</strong>${left?`<span class="qty">เหลือ ${left}/${it.qty}</span>`:`<span class="badge">ขายหมด</span>`}</div>
+    <div class="line">ทุน <b>$${fmt(c.usd)}</b> × ${fmt(fxOf(id))} = <b>${baht(unit)}</b> ต่อชิ้น</div>
+    <div class="line">ขาย ${it.price?`<b>${baht(it.price)}</b>`:`<span class="warn">ยังไม่ตั้งราคา</span>`}${per!=null?` · กำไร ${pn(per)} ต่อชิ้น`:""}</div>
+    ${sl.length?`<details class="sold"><summary>ขายไปแล้ว ${sq} ชิ้น</summary>${sl.map(x=>`<div class="soldrow"><div><b>${esc(x.s.customer||"ไม่ระบุชื่อ")}</b><span class="small"> · ${thDate(x.s.date)} · #${esc(x.s.orderNo)}</span></div><div class="r">${x.qty} × ${baht(x.price)}${x.s.paid?"":`<span class="warn"> · ยังไม่ชำระ</span>`}</div></div>`).join("")}</details>`:""}
+    <div class="actions"><button class="btn" data-act="editItem" data-id="${id}">แก้ไข</button>${sq?"":`<button class="btn ghost danger" data-act="delItem" data-id="${id}">ลบ</button>`}</div></div></div></div>`}).join("");
+  return `<button class="back" data-back>‹ ล็อตทั้งหมด</button>
+  <div class="toolbar" style="margin-top:4px"><h2>${esc(l.name)}</h2></div>
+  <div class="chips" style="margin:-6px 0 14px">${statusChip(l)}${l.buyDate?`<span class="chip">ซื้อ ${thDate(l.buyDate)}</span>`:""}${lotFx(l)?`<span class="chip">อัตรา ${fmt(l.fx)} ฿/USD</span>`:""}${l.shipDate?`<span class="chip">ส่งมาไทย ${thDate(l.shipDate)}</span>`:""}</div>
+  <div class="grid g3 lotstats">${stat("เงินลงทุน",baht(x.invest))}${stat("ได้เงินสุทธิ",baht(x.netIn))}${stat("ผลของรอบ",pn(x.result),x.result<0?"":"good")}</div>
+  <div class="card"><div class="kv">
+   ${kv("ค่าสินค้า",`${baht(x.goods)} <span class="small">($${fmt(x.usd)})</span>`)}${kv("ค่าส่งมาไทย",x.shipKnown?baht(x.ship):`<span class="warn">ยังไม่ใส่</span>`)}${kv("เงินลงทุนทั้งล็อต",baht(x.invest),"t")}
+   ${kv("ยอดขาย",baht(x.rev))}${kv("ค่าคอมคนขาย","− "+baht(x.comm))}${kv("ค่าส่งในไทย","− "+baht(x.dship))}${kv("ได้เงินสุทธิ",baht(x.netIn),"t")}
+   ${kv("ผลของรอบ (ได้เงินสุทธิ − เงินลงทุน)",pn(x.result),"t")}
+   ${kv("ขายแล้ว",`${x.soldP} จาก ${x.pieces} ชิ้น`)}${kv("ค่าสินค้าของที่ยังเหลือ",baht(x.remainVal))}</div>
+   <div class="actions"><button class="btn ${x.shipKnown?"":"primary"}" data-act="shipLot" data-id="${lid}">${x.shipKnown?"แก้ค่าส่งมาไทย":"ใส่ค่าส่งมาไทย"}</button>
+   <button class="btn" data-act="renameLot" data-id="${lid}">แก้ไขล็อต</button>
+   <button class="btn" data-act="closeLot" data-id="${lid}">${l.closed?"เปิดรอบอีกครั้ง":"ปิดรอบ"}</button>
+   ${its.length?"":`<button class="btn danger" data-act="delLot" data-id="${lid}">ลบล็อต</button>`}</div></div>
+  <div class="toolbar"><h3 style="margin:0">สินค้าในล็อต (${its.length})</h3>${l.closed?"":`<button class="btn primary" data-act="newItem" data-id="${lid}">+ เพิ่มสินค้า</button>`}</div>
+  ${its.length?seg+(rows||`<div class="empty">ไม่มีสินค้าในกลุ่มนี้</div>`):`<div class="empty">ยังไม่มีสินค้าในล็อตนี้ กด “เพิ่มสินค้า” ทุกครั้งที่ซื้อของ</div>`}`}
+
+function vStock(){const sold=soldMap();
+  const list=Object.entries(S.items).map(([id,it])=>({id,it,left:(+it.qty||0)-(sold[id]||0)})).sort((a,b)=>(b.it.createdAt||0)-(a.it.createdAt||0));
+  const avail=list.filter(x=>x.left>0),out=list.length-avail.length;
+  return `<h2>สินค้า</h2>${avail.length?avail.map(({id,it,left})=>`<div class="card"><div class="prodrow">${it.photo?`<button class="pic" data-view="${esc(it.photo)}" aria-label="ดูรูป"><img src="${src(it.photo)}" alt="" loading="lazy"></button>`:`<div class="pic">ไม่มีรูป</div>`}
+   <div class="grow"><div class="row"><strong>${esc(it.name)}</strong><span style="font-weight:700">เหลือ ${left}</span></div>
+   <div class="small">ราคา ${it.price?baht(it.price):"รอเจ้าของตั้งราคา"} · ค่าคอม ${fmt(it.pct)}% ของกำไร</div>
+   <div class="chips">${it.arrived?`<span class="chip ok">ถึงไทยแล้ว พร้อมส่ง</span>`:`<span class="chip wait">กำลังมาไทย รับพรีออเดอร์</span>`}<span class="chip">${esc(it.lotName||"")}</span></div></div></div></div>`).join(""):
+   `<div class="empty">ยังไม่มีสินค้าพร้อมขาย</div>`}${out?`<h3>ขายหมดแล้ว (${out})</h3>${list.filter(x=>x.left<=0).map(({it})=>`<div class="card soldout"><div class="prodrow">${it.photo?`<button class="pic" data-view="${esc(it.photo)}" aria-label="ดูรูป"><img src="${src(it.photo)}" alt="" loading="lazy"></button>`:`<div class="pic">ไม่มีรูป</div>`}<div class="grow"><div class="row"><strong>${esc(it.name)}</strong><span class="badge">ขายหมด</span></div><div class="small">ขายไป ${it.qty} ชิ้น · ${esc(it.lotName||"")}</div></div></div></div>`).join("")}`:""}`}
+
+function vMine(){const t=today(),mo=month(),mine=S.sales.filter(s=>active(s)&&!s.noComm);
+  const sum=(f,g)=>mine.filter(s=>f(s.date)).reduce((a,s)=>a+g(s),0);
+  const unpaid=mine.filter(s=>!s.paid),noSlip=mine.filter(s=>!slipsOf(s.id).length),pend=mine.filter(s=>saleComm(s)==null).length;
+  const li=(s,right)=>`<div class="soldrow"><div><b>${esc(s.customer||"ไม่ระบุชื่อ")}</b><span class="small"> · ${thDate(s.date)} · #${esc(s.orderNo)}</span></div><div class="r">${right}</div></div>`;
+  return `<h2>ยอดของฉัน</h2>
+  <h3>วันนี้</h3><div class="grid">${stat("ยอดขาย",baht(sum(x=>x===t,saleTotal)))}${stat("ค่าคอมของฉัน",baht(sum(x=>x===t,s=>saleComm(s)||0)))}</div>
+  <h3>เดือนนี้</h3><div class="grid">${stat("ยอดขาย",baht(sum(x=>x&&x.startsWith(mo),saleTotal)))}${stat("ค่าคอมของฉัน",baht(sum(x=>x&&x.startsWith(mo),s=>saleComm(s)||0)))}</div>${pend?`<p class="small">มี ${pend} ออเดอร์ที่รอเจ้าของร้านคำนวณค่าคอม (คำนวณเมื่อเจ้าของร้านเปิดแอป)</p>`:""}
+  <h3>ยังไม่มีสลิป (${noSlip.length})</h3>${noSlip.length?`<div class="card">${noSlip.map(s=>li(s,baht(saleTotal(s)))).join("")}</div><p class="small">ไปที่แท็บ “ออเดอร์” เพื่อแนบสลิปของแต่ละรายการ</p>`:`<div class="empty">ทุกออเดอร์มีสลิปแล้ว</div>`}
+  <h3>รอชำระเงิน (${unpaid.length})</h3>${unpaid.length?`<div class="card">${unpaid.map(s=>li(s,baht(saleTotal(s)))).join("")}</div>`:`<div class="empty">ชำระครบแล้ว</div>`}`}
+
+function vSales(){const list=S.sales.filter(v2).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,200),u=S.owner?unitCosts():null;
+  return `<div class="toolbar"><h2>ออเดอร์</h2><button class="btn primary" data-act="newSale">+ เพิ่มออเดอร์</button></div>
+  ${list.length?list.map(s=>saleCard(s,u)).join(""):`<div class="empty">ยังไม่มีออเดอร์ กด “เพิ่มออเดอร์” เพื่อบันทึกการขายรายการแรก</div>`}`}
+function saleCard(s,u){const tot=saleTotal(s),cm=saleComm(s),canc=!active(s);
+  const items=(s.items||[]).map(i=>`${esc(i.name)} × ${i.qty} @ ${fmt(i.price)}`).join("<br>");
+  let chips=canc?`<span class="chip bad">ยกเลิกแล้ว</span>`:(s.paid?`<span class="chip ok">ชำระแล้ว</span>`:`<span class="chip wait">ยังไม่ชำระ</span>`);
+  chips+=s.noComm?`<span class="chip">เจ้าของขายเอง ไม่มีค่าคอม</span>`:`<span class="chip">${cm==null?"ค่าคอม รอคำนวณ":"ค่าคอม "+baht(cm)}</span>`;
+  let owner="";
+  if(S.owner&&!canc){const c=saleCost(s,u),p=tot-c-ship(s)-(cm||0);
+    owner=`<div class="small" style="margin-top:8px">ค่าสินค้า ${baht(c)} · กำไรขั้นต้น ${pn(p)}</div>
+    <div class="inline"><label for="sh-${s.id}" style="white-space:nowrap">ค่าส่งในไทย</label><input id="sh-${s.id}" type="number" inputmode="decimal" min="0" step="any" value="${S.saleCosts[s.id]?.ship??""}" data-ship="${s.id}" placeholder="0"></div>`}
+  const sl=slipsOf(s.id),canSlip=!canc&&!(s.noComm&&!S.owner);
+  const slipHtml=(sl.length||canSlip)?`<div class="thumbs"><span class="photolabel">สลิปชำระเงิน${sl.length?"":" · ยังไม่มี"}</span>${sl.map(x=>`<button class="thumb" data-slip="${esc(x.id)}" aria-label="ดูสลิป"><img src="${x.thumb}" alt=""></button>`).join("")}${canSlip?`<button class="btn" data-pick="slips" data-id="${s.id}">แนบสลิป</button>`:""}</div>`:"";
+  const pids=s.parcels||[],canParcel=!canc&&S.assets&&S.owner;
+  const parcelHtml=(pids.length||canParcel)?`<div class="thumbs"><span class="photolabel">รูปพัสดุ/ใบเสร็จส่งของ${pids.length?"":" · ยังไม่มี"}</span>${pids.map(id=>`<button class="thumb" data-view="${esc(id)}" data-sid="${s.id}" data-field="parcels" aria-label="ดูรูปพัสดุ"><img src="${src(id)}" alt="" loading="lazy"></button>`).join("")}${canParcel?`<button class="btn" data-pick="parcels" data-id="${s.id}">แนบรูปพัสดุ</button>`:""}</div>`:"";
+  const acts=[];
+  if(!canc&&(S.owner||!s.noComm))acts.push(`<button class="btn ${s.paid?"":"primary"}" data-act="paid" data-id="${s.id}">${s.paid?"ยกเลิกสถานะชำระ":"บันทึกว่าชำระแล้ว"}</button>`);
+  if(S.owner){if(!canc){acts.push(`<button class="btn" data-act="editSale" data-id="${s.id}">แก้ไข</button>`);acts.push(`<button class="btn danger" data-act="cancel" data-id="${s.id}">ยกเลิกออเดอร์</button>`)}
+    acts.push(`<button class="btn ghost danger" data-act="delSale" data-id="${s.id}">ลบ</button>`)}
+  return `<div class="card${canc?" canceled":""}"><div class="row"><strong>${esc(s.orderNo)} · ${esc(s.customer||"ไม่ระบุชื่อ")}</strong><strong>${baht(tot)}</strong></div>
+  <div class="small">${thDate(s.date)}</div><div style="margin-top:6px;font-size:15px">${items}</div><div class="chips">${chips}</div>${owner}
+  ${slipHtml}${parcelHtml}${acts.length?`<div class="actions">${acts.join("")}</div>`:""}</div>`}
+
+/* ---------- dialogs ---------- */
+const dlg=$("#dlg"),body=$("#dlgbody");
+function askConfirm(msg,okLabel){return new Promise(res=>{const d=$("#cdlg");$("#cmsg").textContent=msg;$("#cok").textContent=okLabel||"ยืนยัน";
+  let fin=false;const done=v=>{if(fin)return;fin=true;if(d.open)d.close();res(v)};
+  $("#cok").onclick=()=>done(true);$("#ccancel").onclick=()=>done(false);d.oncancel=()=>done(false);d.onclose=()=>done(false);d.showModal()})}
+function open(html,onSave,onInput){body.innerHTML=html+`<div class="two"><button class="btn" value="cancel" formnovalidate>ยกเลิก</button><button class="btn primary" value="ok" id="save">บันทึก</button></div>`;
+  body.oninput=onInput||null;body.onclick=e=>{if(e.target.closest("[data-dlg]")&&onInput)onInput(e)};
+  $("#save").onclick=async e=>{e.preventDefault();if(!body.reportValidity())return;$("#save").disabled=true;const r=await onSave();$("#save").disabled=false;if(r!==false)dlg.close()};
+  dlg.showModal()}
+function lotDialog(id){const l=id?S.lots[id]:null;const n=Object.keys(S.lots).length;
+  const def=l?l.name:"ล็อต "+(n<26?String.fromCharCode(65+n):n+1);
+  open(`<h2>${id?"แก้ไขล็อต":"สร้างล็อตใหม่"}</h2><label>ชื่อล็อต<input name="name" required value="${esc(def)}"></label>
+  <div class="two"><label>วันที่ซื้อ<input name="buyDate" type="date" required value="${(l&&l.buyDate)||today()}"></label>
+  <label>อัตรา (บาท/USD)<input name="fx" type="number" inputmode="decimal" min="0.01" step="any" required value="${(l&&l.fx)||S.ownerSettings.fx||""}" placeholder="เช่น 33.5"></label></div>
+  <p class="small" style="margin:-4px 0 0">${fxLink} · ใช้อัตราเดียวกันกับสินค้าทุกชิ้นในล็อตนี้ ถ้าแก้อัตรา ต้นทุนของทุกชิ้นจะคำนวณใหม่</p>`,
+  async()=>{const f=body.elements,name=f.name.value.trim(),buyDate=f.buyDate.value,fx=+f.fx.value;
+    await guard(async()=>{
+      if(id){await S.db.collection("lots").doc(id).update({name,buyDate,fx});for(const [iid,it] of lotItems(id))if(it.lotName!==name)await S.db.collection("items").doc(iid).update({lotName:name})}
+      else{const r=S.db.collection("lots").doc();await r.set({name,buyDate,fx,createdAt:Date.now(),ship:null,closed:false});S.lotId=r.id}
+      if(buyDate===today()&&fx!==+S.ownerSettings.fx)await S.db.collection("ownerSettings").doc("main").set({...S.ownerSettings,fx,fxAt:Date.now()})},id?"บันทึกล็อตแล้ว":"สร้างล็อตแล้ว")})}
+function itemDialog(lid,id){const it=id?S.items[id]:{},c=id?(S.itemCosts[id]||{}):{},lot=S.lots[lid]||{},sq=id?(soldMap()[id]||0):0;const FX=lotFx(lot)||+c.fx||+S.ownerSettings.fx||0;
+  open(`<h2>${id?"แก้ไขสินค้า":"เพิ่มสินค้าเข้า "+esc(lot.name)}</h2>
+  ${S.assets?`<div class="prodrow"><div class="pic" id="ppic">${it.photo?`<img src="${src(it.photo)}" alt="">`:"ไม่มีรูป"}</div><div class="grow"><label>รูปสินค้า<input name="photo" type="file" accept="image/*"></label></div></div>`:""}
+  <label>ลักษณะสินค้า<input name="kind" required value="${esc(it.kind||"")}" placeholder="เช่น กระเป๋าสะพาย, น้ำหอม, รองเท้า"></label>
+  <label>แบรนด์<input name="brand" value="${esc(it.brand||"")}" placeholder="เช่น Coach"></label>
+  <div class="two"><label>ราคาซื้อต่อชิ้น (USD)<input name="usd" type="number" inputmode="decimal" min="0" step="any" required value="${c.usd??""}"></label>
+  <label>เป็นเงินไทย (บาท)<input name="thb" type="number" inputmode="decimal" min="0" step="any" value="${c.usd!=null&&FX?Math.round(c.usd*FX*100)/100:""}" placeholder="คำนวณให้เอง"></label></div>
+  <p class="small" id="fxnote" style="margin:-6px 0 0">${FX?`คิดที่ ${fmt(FX)} บาท/USD (อัตราของ${esc(lot.name||"ล็อต")}) · ใส่ช่องไหนก็ได้ อีกช่องจะคำนวณให้`:"ล็อตนี้ยังไม่มีอัตราแลกเปลี่ยน กด “แก้ไขล็อต” เพื่อใส่"}</p>
+  <label>จำนวน (ชิ้น)<input name="qty" type="number" inputmode="numeric" min="${Math.max(1,sq)}" step="1" required value="${it.qty??1}"></label>
+  <h3 style="margin:6px 0 0">ข้อมูลเพิ่มเติม (ไม่ใส่ก็ได้)</h3>
+  <label>รายละเอียด<input name="detail" value="${esc(it.detail||"")}" placeholder="เช่น สีดำ ไซซ์ M"></label>
+  <label>เผื่อค่าส่งมาไทยต่อชิ้น (ใช้คิดราคาแนะนำเท่านั้น)<input name="shipEst" type="number" inputmode="decimal" min="0" step="any" value="${S.ownerSettings.shipEst??""}" placeholder="เช่น 300"></label>
+  <div class="two"><label>ราคาขาย (บาท)<input name="price" type="number" inputmode="decimal" min="0" step="any" value="${it.price||""}"></label>
+  <label>ค่าคอมคนขาย (% ของกำไร)<input name="pct" type="number" inputmode="decimal" min="0" max="100" step="any" required value="${it.pct??10}"></label></div>
+  <div class="preview" id="pv"></div>`,
+  async()=>{const f=body.elements;const fx=FX;if(!fx){toast("ใส่อัตราแลกเปลี่ยนของล็อตก่อน");return false}
+    const kind=f.kind.value.trim(),brand=f.brand.value.trim(),detail=f.detail.value.trim();
+    const doc={lotId:lid,lotName:lot.name,kind,brand,detail,name:[kind,brand,detail].filter(Boolean).join(" "),qty:+f.qty.value,price:+f.price.value||0,pct:+f.pct.value||0,arrived:lot.ship!=null,createdAt:it.createdAt||Date.now()};
+    if(it.photo)doc.photo=it.photo;const file=f.photo&&f.photo.files[0];if(file){const pid=await uploadPhoto(file);if(!pid)return false;doc.photo=pid}
+    const cost={usd:+f.usd.value||0,fx,buyDate:lot.buyDate||c.buyDate||today()};const se=f.shipEst.value===""?null:+f.shipEst.value;
+    await guard(async()=>{const r=id?S.db.collection("items").doc(id):S.db.collection("items").doc();await r.set(doc);await S.db.collection("itemCosts").doc(r.id).set(cost);
+      const os={...S.ownerSettings};let ch=false;if(se!=null&&se!==+os.shipEst){os.shipEst=se;ch=true}
+      if(ch)await S.db.collection("ownerSettings").doc("main").set(os)},id?"บันทึกแล้ว":"เพิ่มสินค้าแล้ว")},pv);
+  pv({type:"init",target:{}});
+  function pv(e){const f=body.elements,pr=f.price,nm=e.target&&e.target.name,fx0=FX;
+    if(nm==="thb"){if(fx0)f.usd.value=f.thb.value===""?"":Math.round(f.thb.value/fx0*100)/100}
+    else if(nm==="usd"){f.thb.value=f.usd.value!==""&&fx0?Math.round(f.usd.value*fx0*100)/100:""}
+    if(e.target&&e.target.name==="photo"&&e.target.files[0])$("#ppic").innerHTML=`<img src="${URL.createObjectURL(e.target.files[0])}" alt="">`;
+    if(e.type==="click"&&e.target.dataset.dlg==="fill")pr.value=e.target.dataset.v;
+    const usd=+f.usd.value||0,fx=FX,qty=+f.qty.value||1,pct=+f.pct.value||0,price=+pr.value||0,box=$("#pv");
+    if(!usd||!fx){box.innerHTML="ใส่ราคา USD และอัตราแลกเปลี่ยน เพื่อดูต้นทุนเป็นบาทและราคาขายที่แนะนำ";return}
+    const goods=usd*fx,se=+f.shipEst.value||0,cost=goods+se;
+    let html=`ค่าสินค้า <strong>${baht(goods)}</strong> ต่อชิ้น${se?` · เผื่อค่าส่ง ${baht(se)}`:""}`;
+    if(price){const cmm=Math.max(0,price-goods)*pct/100,prof=price-goods-cmm;html+=`<br>ขาย ${baht(price)} หักค่าคอม ${baht(cmm)} → กำไร <strong class="${prof<0?"neg":"pos"}">${baht(prof)}</strong> ต่อชิ้น${se?` (หลังหักค่าส่งที่เผื่อ ${baht(prof-se)})`:" (ยังไม่หักค่าส่งมาไทย)"}`}
+    html+=`<div class="small" style="margin-top:6px">ราคาแนะนำ${se?" (รวมค่าส่งที่เผื่อแล้ว)":""}</div>`;
+    const sug=[20,30,50].map(m=>{const d=1-pct/100-m/100;return d>0?[m,Math.ceil(cost*(1-pct/100)/d/10)*10]:null}).filter(Boolean);
+    box.innerHTML=html+`<div class="chips">${sug.map(([m,v])=>`<button type="button" class="chip" data-dlg="fill" data-v="${v}">กำไร ${m}%: ${fmt(v)} ฿</button>`).join("")}</div>`}}
+function shipLotDialog(lid){const l=S.lots[lid],fx=+(l&&l.fx)||+S.ownerSettings.fx||0;
+  open(`<h2>ค่าส่งมาไทย · ${esc(l.name)}</h2><p class="small" style="margin:0">ใส่ค่าส่งของทั้งล็อตครั้งเดียว ระบบหักในสรุปของล็อตนี้</p>
+  <label>วันที่ส่งมาไทย<input name="shipDate" type="date" value="${l.shipDate||today()}"></label>
+  <div class="two"><label>ค่าส่งทั้งล็อต<input name="amt" type="number" inputmode="decimal" min="0" step="any" required value="${l.ship??""}"></label>
+  <label>จ่ายเป็น<select name="unit"><option value="THB">บาท</option><option value="USD">USD</option></select></label></div>
+  <div class="preview" id="pv">ใส่ค่าส่งเพื่อดูต้นทุนต่อชิ้น</div>`,
+  async()=>{const f=body.elements,amt=+f.amt.value||0;if(f.unit.value==="USD"&&!fx){toast("ตั้งอัตราแลกเปลี่ยนก่อน");return false}
+    const shipV=f.unit.value==="USD"?Math.round(amt*fx*100)/100:amt;
+    await guard(async()=>{await S.db.collection("lots").doc(lid).update({ship:shipV,shipDate:f.shipDate.value});
+      for(const [iid,it] of lotItems(lid))if(!it.arrived)await S.db.collection("items").doc(iid).update({arrived:true})},"บันทึกค่าส่งแล้ว")},
+  ()=>{const f=body.elements;if(f.amt.value===""){$("#pv").textContent="ใส่ค่าส่งเพื่อดูต้นทุนต่อชิ้น";return}
+    const sv=f.unit.value==="USD"?(+f.amt.value||0)*fx:(+f.amt.value||0),x=lotStats(lid,unitCosts(),soldMap());
+    $("#pv").innerHTML=(f.unit.value==="USD"?`= ${baht(sv)} (อัตรา ${fmt(fx)})<br>`:"")+`เงินลงทุนทั้งล็อตจะเป็น <strong>${baht(x.goods+sv)}</strong> (ค่าสินค้า ${baht(x.goods)} + ค่าส่ง ${baht(sv)})`})}
+function genOrderNo(date){const d=date||today(),pre=d.slice(2).replace(/-/g,""),used=new Set(S.sales.map(x=>x.orderNo));let n=S.sales.filter(x=>x.date===d).length+1,no;do{no=pre+"-"+String(n++).padStart(2,"0")}while(used.has(no));return no}
+function saleDialog(editId){const s0=editId?S.sales.find(x=>x.id===editId):null,sold=soldMap(editId);let numDirty=false;
+  const opts=sel=>`<option value="">เลือกสินค้า</option>`+Object.entries(S.items).map(([id,it])=>({id,it,left:(+it.qty||0)-(sold[id]||0)})).filter(x=>x.left>0||x.id===sel).sort((a,b)=>a.it.name.localeCompare(b.it.name,"th"))
+    .map(({id,it,left})=>`<option value="${id}" ${id===sel?"selected":""}>${esc(it.name)} · เหลือ ${left}${it.arrived?"":" · กำลังมา"} (${esc(it.lotName||"")})</option>`).join("");
+  const row=(sel,qty,price)=>`<div class="item"><label class="full">สินค้า<select name="code" required>${opts(sel)}</select></label>
+   <label>จำนวน (ชิ้น)<input name="qty" type="number" inputmode="numeric" min="1" step="1" value="${qty??1}" required></label>
+   <label>ราคาขายต่อชิ้น (บาท)<input name="price" type="number" inputmode="decimal" min="0" step="any" value="${price??""}" required></label></div>`;
+  const oldPct={};if(s0)for(const i of s0.items||[])oldPct[i.itemId]=i.pct;
+  open(`<h2>${s0?"แก้ไขออเดอร์":"เพิ่มออเดอร์"}</h2>
+  <div class="two"><label>วันที่ขาย<input name="date" type="date" required value="${s0?s0.date:today()}"></label>
+  <label>เลขออเดอร์<input name="orderNo" required value="${esc(s0?s0.orderNo:genOrderNo(today()))}"></label></div>
+  <label>ชื่อลูกค้า<input name="customer" value="${esc(s0?s0.customer:"")}" placeholder="เช่น คุณนิด"></label>
+  <div id="items">${s0?(s0.items||[]).map(i=>row(i.itemId,i.qty,i.price)).join(""):row()}</div><button type="button" class="btn" data-dlg="add">เพิ่มสินค้าในออเดอร์นี้</button>
+  ${S.owner?`<label class="check"><input type="checkbox" name="noComm" ${s0&&s0.noComm?"checked":""}> ฉันขายและรับเงินเอง (ไม่คิดค่าคอมคนขาย)</label>`:""}
+  <label class="check"><input type="checkbox" name="paid" ${s0&&s0.paid?"checked":""}> ชำระเงินแล้ว</label>
+  <div class="preview" id="pv">เลือกสินค้าเพื่อดูยอดรวม</div>`,
+  async()=>{const s=read();if(!s.items.length){toast("ใส่สินค้าอย่างน้อย 1 รายการ");return false}
+    if(!s0&&!numDirty)s.orderNo=genOrderNo(s.date);
+    const over=overs(s);if(over.length){toast("ของไม่พอ: "+over.join(", "));return false}
+    await guard(async()=>{if(s0){await S.db.collection(s0._col).doc(editId).update({...s,editedAt:Date.now()});if(s.paid!==!!s0.paid)await S.db.collection("payments").doc(editId).set({paid:s.paid,by:S.myId||"",at:Date.now()})}
+      else await S.db.collection(S.owner?"sales":"sellerOrders").add(s)},s0?"แก้ไขออเดอร์แล้ว":"บันทึกออเดอร์แล้ว")},upd);
+  upd({type:"init",target:{}});
+  function upd(e){if(e.target&&e.target.name==="orderNo")numDirty=true;
+    if(e.type==="click"&&e.target.dataset.dlg==="add")$("#items").insertAdjacentHTML("beforeend",row());
+    if(e.target.name==="code"){const it=S.items[e.target.value];const pr=e.target.closest(".item").querySelector("[name=price]");if(it&&it.price&&!pr.value)pr.value=it.price}
+    const s=read(),over=overs(s),tot=saleTotal(s),cm=saleComm(s);
+    $("#pv").innerHTML=s.items.length?`ยอดรวม <strong>${baht(tot)}</strong>${s.noComm?" · ไม่คิดค่าคอม":(S.owner&&cm!=null?` · ค่าคอมคนขาย ${baht(cm)}`:"")}${over.length?`<br><span class="neg">ของไม่พอ: ${over.join(", ")}</span>`:""}`:"เลือกสินค้าเพื่อดูยอดรวม"}
+  function overs(s){const q={};for(const i of s.items)q[i.itemId]=(q[i.itemId]||0)+i.qty;return Object.entries(q).filter(([id,v])=>v>(+S.items[id].qty||0)-(sold[id]||0)).map(([id])=>esc(S.items[id].name))}
+  function read(){const f=body.elements,nc=f.noComm?f.noComm.checked:!!(s0&&s0.noComm);
+    const items=[...body.querySelectorAll(".item")].map(r=>{const id=r.querySelector("[name=code]").value,it=S.items[id]||{};
+      return {itemId:id,name:it.name||"",qty:+r.querySelector("[name=qty]").value||0,price:+r.querySelector("[name=price]").value||0,pct:nc?0:(oldPct[id]!=null?+oldPct[id]:+(it.pct??10))}}).filter(i=>i.itemId&&i.qty>0);
+    const base={v:2,date:f.date.value,orderNo:f.orderNo.value.trim(),customer:f.customer.value.trim(),items,paid:f.paid.checked,noComm:nc};
+    return s0?base:{...base,status:"active",createdBy:S.myId||"",createdAt:Date.now()}}}
+
+/* ---------- events ---------- */
+document.addEventListener("click",async e=>{
+  const t=e.target.closest("[data-tab]");if(t){S.view=t.dataset.tab;S.lotId=null;render();scrollTo(0,0);return}
+  const fb=e.target.closest("[data-filter]");if(fb){S.itemFilter=fb.dataset.filter;render();return}
+  const lo=e.target.closest("[data-lot]");if(lo){S.view="lots";S.lotId=lo.dataset.lot;S.itemFilter="all";render();scrollTo(0,0);return}
+  if(e.target.closest("[data-back]")){S.lotId=null;render();return}
+  const sv=e.target.closest("[data-slip]");if(sv){viewSlip(sv.dataset.slip);return}
+  const sd=e.target.closest("[data-slipdel]");if(sd){if(!await askConfirm("ลบสลิปนี้?","ลบสลิป"))return;const sid=sd.dataset.slipdel;$("#viewer").close();guard(async()=>{await S.db.collection("slips").doc(sid).delete();await S.db.collection("slipFull").doc(sid).delete()},"ลบสลิปแล้ว");return}
+  const v=e.target.closest("[data-view]");if(v){viewPhoto(v.dataset.view,v.dataset.sid,v.dataset.field);return}
+  if(e.target.closest("[data-vclose]")){$("#viewer").close();return}
+  const dv=e.target.closest("[data-vdel]");if(dv){if(!await askConfirm("ลบรูปนี้?","ลบรูป"))return;const s=S.sales.find(x=>x.id===dv.dataset.sid),f=dv.dataset.field,pid=dv.dataset.vdel;$("#viewer").close();
+    if(s)guard(async()=>{await S.db.collection(s._col).doc(s.id).update({[f]:(s[f]||[]).filter(x=>x!==pid)});try{await S.assets.delete(pid)}catch(_){}},"ลบรูปแล้ว");return}
+  const pk=e.target.closest("[data-pick]");if(pk){pick={field:pk.dataset.pick,id:pk.dataset.id};$("#picker").click();return}
+  const a=e.target.closest("[data-act]");if(!a||!S.db)return;const id=a.dataset.id,act=a.dataset.act,s=S.sales.find(x=>x.id===id);
+  if(act==="fx")fxDialog();
+  else if(act==="pinSet")pinDialog("set");
+  else if(act==="pinChange")pinDialog("change");
+  else if(act==="pinOff")pinDialog("off");
+  else if(act==="lockNow")relockAdmin()
+  else if(act==="newLot")lotDialog();
+  else if(act==="renameLot")lotDialog(id);
+  else if(act==="newItem"){const l=S.lots[id];if(!(+(l&&l.fx)||+S.ownerSettings.fx)){toast("ใส่อัตราแลกเปลี่ยนของล็อตก่อน");lotDialog(id);return}itemDialog(id)}
+  else if(act==="editItem")itemDialog(S.items[id].lotId,id);
+  else if(act==="shipLot")shipLotDialog(id);
+  else if(act==="closeLot"){const l=S.lots[id];if(l.closed||await askConfirm("ปิดรอบล็อตนี้? ของที่เหลือยังขายต่อได้ และเปิดรอบอีกครั้งได้ภายหลัง","ปิดรอบ"))guard(()=>S.db.collection("lots").doc(id).update({closed:!l.closed,closedAt:l.closed?null:Date.now()}),l.closed?"เปิดรอบแล้ว":"ปิดรอบแล้ว")}
+  else if(act==="delLot"){if(lotItems(id).length)return toast("ลบสินค้าในล็อตก่อน");if(await askConfirm("ลบล็อตนี้?","ลบล็อต"))guard(async()=>{await S.db.collection("lots").doc(id).delete();S.lotId=null},"ลบล็อตแล้ว")}
+  else if(act==="delItem"){if(soldMap()[id])return toast("สินค้านี้มีการขายแล้ว ลบไม่ได้");if(await askConfirm("ลบสินค้านี้?","ลบสินค้า"))guard(async()=>{await S.db.collection("items").doc(id).delete();await S.db.collection("itemCosts").doc(id).delete()},"ลบแล้ว")}
+  else if(act==="newSale"){if(!Object.keys(S.items).length)return toast("ยังไม่มีสินค้าในระบบ");saleDialog()}
+  else if(act==="editSale")saleDialog(id)
+  else if(act==="paid"&&s)guard(()=>S.db.collection("payments").doc(id).set({paid:!s.paid,by:S.myId||"",at:Date.now()}),s.paid?"ยกเลิกสถานะชำระแล้ว":"บันทึกการชำระแล้ว");
+  else if(act==="cancel"&&s){if(await askConfirm("ยกเลิกออเดอร์นี้? สินค้าจะกลับเข้าสต็อก","ยกเลิกออเดอร์"))guard(()=>S.db.collection(s._col).doc(id).update({status:"cancelled"}),"ยกเลิกออเดอร์แล้ว")}
+  else if(act==="delSale"){if(await askConfirm("ลบออเดอร์นี้ถาวร?","ลบออเดอร์"))guard(async()=>{await S.db.collection(s?s._col:"sales").doc(id).delete();await S.db.collection("saleCosts").doc(id).delete();await S.db.collection("payments").doc(id).delete();for(const x of slipsOf(id)){await S.db.collection("slips").doc(x.id).delete();await S.db.collection("slipFull").doc(x.id).delete()}},"ลบแล้ว")}
+});
+let pick=null;
+$("#picker").addEventListener("change",async e=>{const file=e.target.files[0];e.target.value="";if(!file||!pick)return;const fld=pick.field,sid=pick.id;pick=null;
+  if(fld==="slips"){await addSlip(sid,file);return}
+  const pid=await uploadPhoto(file);if(!pid)return;const s=S.sales.find(x=>x.id===sid);if(!s)return;
+  await guard(()=>S.db.collection(s._col).doc(sid).update({[fld]:[...(s[fld]||[]),pid]}),"แนบรูปแล้ว")});
+document.addEventListener("change",e=>{const id=e.target.dataset?.ship;if(!id||!S.db)return;const v=+e.target.value||0;
+  if((+S.saleCosts[id]?.ship||0)===v)return;guard(()=>S.db.collection("saleCosts").doc(id).set({ship:v}),"บันทึกค่าส่งแล้ว")});
+
+/* ---------- landing on the seller page; admin needs a PIN (if one is set) ---------- */
+const b64=u=>btoa(String.fromCharCode(...u)),unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function pinHash(pin,saltB64,iter){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(pin),"PBKDF2",false,["deriveBits"]);
+  const bits=await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:unb64(saltB64),iterations:iter},key,256);return b64(new Uint8Array(bits))}
+const hasPin=()=>!!(S.ownerSettings.pin&&S.ownerSettings.pin.hash);
+async function checkPin(pin){const p=S.ownerSettings.pin;if(!p)return true;try{return await pinHash(pin,p.salt,p.iter)===p.hash}catch(e){return false}}
+async function makePin(pin){const salt=b64(crypto.getRandomValues(new Uint8Array(16))),iter=150000;return {salt,iter,len:pin.length,hash:await pinHash(pin,salt,iter)}}
+function lockRender(){const el=$("#lock"),need=S.realOwner&&S.pinPrompt;
+  el.hidden=!need;document.documentElement.style.overflow=need?"hidden":"";
+  for(const n of ["header","main","nav"]){const e=document.querySelector(n);if(e)e.inert=need}
+  if(!need)return;
+  for(const d of [dlg,$("#viewer"),$("#cdlg")])if(d.open)d.close();
+  const wait=S.lockUntil>Date.now(),len=(S.ownerSettings.pin&&S.ownerSettings.pin.len)||4;
+  $("#lockpad").hidden=false;$("#lockdots").hidden=false;
+  $("#lockmsg").textContent=wait?"ใส่ผิดหลายครั้ง รอสักครู่แล้วลองใหม่":S.pinErr?"PIN ไม่ถูกต้อง ลองอีกครั้ง":"ใส่ PIN เพื่อเข้าหน้าแอดมิน";
+  $("#lockdots").innerHTML=Array.from({length:len},(_,i)=>`<i class="${i<S.pinBuf.length?"on":""}"></i>`).join("");
+  $("#lockpad").querySelectorAll("button").forEach(x=>x.disabled=wait)}
+function setPreview(on){S.preview=!!on&&S.realOwner;S.owner=S.realOwner&&!S.preview;S.view=null;S.lotId=null;render();scrollTo(0,0);if(S.owner){S.lastActive=Date.now();fxPromptOnce()}}
+function goAdmin(on){setPreview(!on);try{location.hash=on?"admin":""}catch(e){}}
+function requestAdmin(){if(!S.realOwner||S.owner)return;
+  if(!S.pinReady){toast("กำลังโหลดข้อมูล รอสักครู่");return}
+  if(hasPin()&&!S.unlocked){S.pinPrompt=true;S.pinBuf="";S.pinErr=false;lockRender();return}
+  goAdmin(true)}
+function relockAdmin(){S.unlocked=false;S.pinPrompt=false;if(S.owner)goAdmin(false);else lockRender()}
+function fxPromptOnce(){if(S.fxAsked||!S.owner||!S.pinReady)return;S.fxAsked=true;if(!fxToday())setTimeout(()=>{if(S.owner&&!dlg.open&&!S.pinPrompt)fxDialog()},300)}
+async function pinKey(k){if(S.lockUntil>Date.now()||!S.pinPrompt)return;const len=(S.ownerSettings.pin&&S.ownerSettings.pin.len)||4;S.pinErr=false;
+  if(k==="del")S.pinBuf=S.pinBuf.slice(0,-1);else if(S.pinBuf.length<len)S.pinBuf+=k;
+  lockRender();
+  if(S.pinBuf.length===len){const ok=await checkPin(S.pinBuf);S.pinBuf="";
+    if(ok){S.unlocked=true;S.pinPrompt=false;S.fails=0;lockRender();goAdmin(true);scheduleCommSync()}
+    else{S.fails++;S.pinErr=true;if(S.fails>=5){S.fails=0;S.lockUntil=Date.now()+30000;setTimeout(()=>{S.pinErr=false;lockRender()},30200)}lockRender()}}}
+$("#lockpad").addEventListener("click",e=>{const b=e.target.closest("button");if(b&&!b.disabled)pinKey(b.dataset.k)});
+$("#lockcancel").addEventListener("click",()=>{S.pinPrompt=false;S.pinBuf="";S.pinErr=false;lockRender()});
+addEventListener("keydown",e=>{if($("#lock").hidden||!S.pinPrompt)return;if(/^[0-9]$/.test(e.key))pinKey(e.key);else if(e.key==="Backspace")pinKey("del")});
+["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,()=>{S.lastActive=Date.now()},{passive:true}));
+function lockCheck(){if(S.owner&&hasPin()&&Date.now()-S.lastActive>5*60000)relockAdmin()}
+setInterval(lockCheck,10000);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)S.hiddenAt=Date.now();else if(S.hiddenAt&&Date.now()-S.hiddenAt>60000&&S.owner&&hasPin())relockAdmin()});
+$("#role").addEventListener("click",()=>{if(!S.realOwner)return;if(S.owner)goAdmin(false);else requestAdmin()});
+addEventListener("hashchange",()=>{if(!S.realOwner)return;const adm=location.hash==="#admin";if(adm&&!S.owner)requestAdmin();else if(!adm&&S.owner)setPreview(true)});
+function pinCard(){const on=hasPin();
+  return `<div class="card"><div class="row"><span>ล็อกหน้าแอดมินด้วย PIN</span><strong>${on?"เปิดอยู่":"ปิดอยู่"}</strong></div>
+  <div class="small">${on?`เปิดแอปมาจะเจอหน้าคนขายก่อน ต้องใส่ PIN ${S.ownerSettings.pin.len} หลักเพื่อเข้าหน้านี้ และจะกลับไปหน้าคนขายเมื่อไม่ได้แตะแอป 5 นาที`:"ตั้ง PIN เพื่อให้ต้องใส่รหัสก่อนเข้าหน้าแอดมิน กันคนอื่นหยิบมือถือคุณ"}</div>
+  <div class="actions">${on?`<button class="btn" data-act="lockNow">ล็อกตอนนี้</button><button class="btn" data-act="pinChange">เปลี่ยน PIN</button><button class="btn ghost danger" data-act="pinOff">ปิด PIN</button>`:`<button class="btn primary" data-act="pinSet">ตั้ง PIN</button>`}</div></div>`}
+function pinDialog(mode){
+  if(!(window.crypto&&crypto.subtle)){toast("อุปกรณ์นี้ไม่รองรับการตั้ง PIN");return}
+  const f=(n,l)=>`<label>${l}<input name="${n}" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]{4,8}" maxlength="8" required placeholder="ตัวเลข 4–8 หลัก"></label>`;
+  open(`<h2>${mode==="set"?"ตั้ง PIN":mode==="change"?"เปลี่ยน PIN":"ปิด PIN"}</h2>${mode==="set"?"":f("cur","PIN ปัจจุบัน")}${mode==="off"?"":f("p1","PIN ใหม่")+f("p2","ยืนยัน PIN ใหม่")}${mode==="set"?`<p class="small" style="margin:0">ถ้าลืม PIN ให้ลบฟิลด์ pin ที่ ownerSettings/main บน Firebase Console</p>`:""}`,
+  async()=>{const el=body.elements;
+    if(mode!=="set"&&!await checkPin(el.cur.value)){toast("PIN ปัจจุบันไม่ถูกต้อง");return false}
+    if(mode==="off"){const {pin,...rest}=S.ownerSettings;await guard(()=>S.db.collection("ownerSettings").doc("main").set(rest),"ปิด PIN แล้ว");return}
+    if(el.p1.value!==el.p2.value){toast("PIN ทั้งสองช่องไม่ตรงกัน");return false}
+    const pin=await makePin(el.p1.value);await guard(()=>S.db.collection("ownerSettings").doc("main").set({...S.ownerSettings,pin}),mode==="set"?"ตั้ง PIN แล้ว":"เปลี่ยน PIN แล้ว");S.unlocked=true;S.lastActive=Date.now()})}
+
+/* ---------- commission sync (owner computes from cost, seller reads the result) ---------- */
+function scheduleCommSync(){if(!S.realOwner||!S.db)return;clearTimeout(S.syncT);S.syncT=setTimeout(syncComm,900)}
+async function syncComm(){
+  if(S.syncing||!S.realOwner||!S.db)return;
+  if(!["items","sales","sellerOrders","commissions","itemCosts"].every(k=>S.ready[k]))return;
+  S.syncing=true;
+  try{const want={};
+    for(const s of S.sales){if(!active(s)||s.noComm)continue;const c=saleComm(s);if(c!=null)want[s.id]=Math.round(c*100)/100}
+    for(const [id,amt] of Object.entries(want)){const cur=S.comm[id];if(!cur||Math.abs((+cur.amount)-amt)>0.004)await S.db.collection("commissions").doc(id).set({amount:amt,at:Date.now()})}
+    for(const id of Object.keys(S.comm))if(!(id in want))await S.db.collection("commissions").doc(id).delete();
+  }catch(e){console.error(e)}finally{S.syncing=false}}
+
+/* ---------- boot ---------- */
+render();
+(async()=>{
+  const [db,user,assets]=await Promise.all([claude.use("db"),claude.use("user"),claude.use("assets")]);S.assets=assets;
+  S.realOwner=user?await user.isOwner():false;S.preview=S.realOwner;S.owner=false;S.myId=user?await user.id():null;
+  if(!db){S.noDb=true;render();return}
+  S.db=db;const timer=setTimeout(()=>{S.offline=true;render()},10000);
+  const done=snap=>{if(!snap.metadata.fromCache){clearTimeout(timer);S.offline=false}};
+  const sub=(path,apply)=>db.collection(path).onSnapshot(snap=>{apply(snap);done(snap);if(!snap.metadata.fromCache)S.ready[path]=true;render();scheduleCommSync()},err=>{console.error(path,err);clearTimeout(timer)});
+  const toMap=snap=>Object.fromEntries(snap.docs.map(d=>[d.id,d.data()]));
+  sub("items",s=>S.items=toMap(s));sub("sales",s=>{S.rawSales=s.docs.map(d=>({id:d.id,...d.data()}));rebuildSales()});sub("sellerOrders",s=>{S.rawSeller=s.docs.map(d=>({id:d.id,...d.data()}));rebuildSales()});sub("payments",s=>{S.pay=toMap(s);rebuildSales()});sub("slips",s=>S.slips=s.docs.map(d=>({id:d.id,...d.data()})));sub("commissions",s=>S.comm=toMap(s));
+  if(S.realOwner){sub("lots",s=>S.lots=toMap(s));sub("itemCosts",s=>S.itemCosts=toMap(s));sub("saleCosts",s=>S.saleCosts=toMap(s));
+    sub("ownerSettings",s=>{S.ownerSettings=toMap(s).main||{};if(!s.metadata.fromCache&&!S.pinReady){S.pinReady=true;if(location.hash==="#admin")requestAdmin()}})}
+  render();
+})();
+</script>
+</body>
+</html>
