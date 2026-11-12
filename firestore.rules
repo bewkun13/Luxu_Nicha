@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Replace with the owner's Google email (must match OWNER_EMAIL in firebase-config.js)
-    function owner() { return request.auth != null && request.auth.token.email == "PASTE_OWNER_GMAIL@gmail.com" && request.auth.token.email_verified; }
+    function owner() { return request.auth != null && request.auth.token.email == "jilayut.131041@gmail.com" && request.auth.token.email_verified; }
     function seller() { return request.auth != null && exists(/databases/$(database)/documents/sellers/$(request.auth.token.email)); }
     function interact() { return owner() || seller(); }
 
