@@ -6,4 +6,4 @@ export const firebaseConfig = {
   projectId: "luxnicha-95e90",
   appId: "1:391604845786:web:cfa61d5c271d0be3ce79e3",
 };
-export const OWNER_EMAIL = "jilayut.131041@gmail.com";
+export const OWNER_EMAIL = "bbiiwwbiw@gmail.com";
