@@ -21,7 +21,7 @@ window.claude={use:async n=>(await import("./firebase-adapter.js")).use(n)};
     ${list.length?list.map(m=>`<div class="soldrow"><span>${esc(m)}</span><button class="btn ghost danger" data-sl="rm" data-email="${esc(m)}">ลบ</button></div>`).join(""):`<div class="small">ยังไม่มี เพิ่มอีเมล Gmail ของคนขายเพื่อให้เขาล็อกอินได้</div>`}
     <div class="actions"><button class="btn primary" data-sl="add">+ เพิ่มคนขาย</button></div></div>`};
   document.addEventListener("click",async e=>{const b=e.target.closest("[data-sl]");if(!b||!S.db)return;
-    if(b.dataset.sl==="add"){open(`<h2>เพิ่มคนขาย</h2><label>อีเมล Gmail ของคนขาย<input name="email" type="email" required placeholder="name@gmail.com" autocomplete="off"></label><p class="small" style="margin:0">คนขายล็อกอินด้วย Google ที่อีเมลนี้เท่านั้น</p>`,
+    if(b.dataset.sl==="add"){openDlg(`<h2>เพิ่มคนขาย</h2><label>อีเมล Gmail ของคนขาย<input name="email" type="email" required placeholder="name@gmail.com" autocomplete="off"></label><p class="small" style="margin:0">คนขายล็อกอินด้วย Google ที่อีเมลนี้เท่านั้น</p>`,
       async()=>{const m=body.elements.email.value.trim().toLowerCase();await guard(()=>S.db.collection("sellers").doc(m).set({at:Date.now()}),"เพิ่มคนขายแล้ว")})}
     else if(b.dataset.sl==="rm"){const m=b.dataset.email;if(!await askConfirm("ลบ "+m+" ออกจากคนขาย?","ลบ"))return;guard(()=>S.db.collection("sellers").doc(m).delete(),"ลบคนขายแล้ว")}});
 })();
@@ -248,7 +248,7 @@ function fxCard(){const fx=S.ownerSettings.fx,old=!fxToday();
   return `<div class="card" style="${old?"background:var(--amber-soft);border-color:transparent":""}"><div class="row"><span>อัตราแลกเปลี่ยนที่ใช้</span><strong>${fx?fmt(fx)+" บาท/USD":"ยังไม่ได้ตั้ง"}</strong></div>
   <div class="small">${fx?`อัปเดตล่าสุด ${fxWhen()}${old?" · ยังไม่ได้อัปเดตของวันนี้":" · อัปเดตของวันนี้แล้ว"}`:"ตั้งอัตราก่อนเพิ่มสินค้า"}</div>
   <div class="actions"><button class="btn" data-act="fx">อัปเดตอัตรา</button></div></div>`}
-function fxDialog(){open(`<h2>อัปเดตอัตราแลกเปลี่ยนของวันนี้</h2>
+function fxDialog(){openDlg(`<h2>อัปเดตอัตราแลกเปลี่ยนของวันนี้</h2>
   <p class="small" style="margin:0">ระบบดึงอัตราจากอินเทอร์เน็ตเองไม่ได้ กด ${fxLink} แล้วนำตัวเลขมาใส่ ถ้าจ่ายด้วยบัตร ใช้อัตราจากแอปบัตรจะตรงกว่า</p>
   <label>บาทต่อ 1 USD<input name="fx" type="number" inputmode="decimal" min="0.01" step="any" required value="${S.ownerSettings.fx??""}" placeholder="เช่น 33.5"></label>`,
   async()=>{const v=+body.elements.fx.value;await guard(()=>S.db.collection("ownerSettings").doc("main").set({...S.ownerSettings,fx:v,fxAt:Date.now()}),"อัปเดตอัตราแล้ว")})}
@@ -403,13 +403,13 @@ const dlg=$("#dlg"),body=$("#dlgbody");
 function askConfirm(msg,okLabel){return new Promise(res=>{const d=$("#cdlg");$("#cmsg").textContent=msg;$("#cok").textContent=okLabel||"ยืนยัน";
   let fin=false;const done=v=>{if(fin)return;fin=true;if(d.open)d.close();res(v)};
   $("#cok").onclick=()=>done(true);$("#ccancel").onclick=()=>done(false);d.oncancel=()=>done(false);d.onclose=()=>done(false);d.showModal()})}
-function open(html,onSave,onInput){body.innerHTML=html+`<div class="two"><button class="btn" value="cancel" formnovalidate>ยกเลิก</button><button class="btn primary" value="ok" id="save">บันทึก</button></div>`;
+function openDlg(html,onSave,onInput){body.innerHTML=html+`<div class="two"><button class="btn" value="cancel" formnovalidate>ยกเลิก</button><button class="btn primary" value="ok" id="save">บันทึก</button></div>`;
   body.oninput=onInput||null;body.onclick=e=>{if(e.target.closest("[data-dlg]")&&onInput)onInput(e)};
   $("#save").onclick=async e=>{e.preventDefault();if(!body.reportValidity())return;$("#save").disabled=true;const r=await onSave();$("#save").disabled=false;if(r!==false)dlg.close()};
   dlg.showModal()}
 function lotDialog(id){const l=id?S.lots[id]:null;const n=Object.keys(S.lots).length;
   const def=l?l.name:"ล็อต "+(n<26?String.fromCharCode(65+n):n+1);
-  open(`<h2>${id?"แก้ไขล็อต":"สร้างล็อตใหม่"}</h2><label>ชื่อล็อต<input name="name" required value="${esc(def)}"></label>
+  openDlg(`<h2>${id?"แก้ไขล็อต":"สร้างล็อตใหม่"}</h2><label>ชื่อล็อต<input name="name" required value="${esc(def)}"></label>
   <div class="two"><label>วันที่ซื้อ<input name="buyDate" type="date" required value="${(l&&l.buyDate)||today()}"></label>
   <label>อัตรา (บาท/USD)<input name="fx" type="number" inputmode="decimal" min="0.01" step="any" required value="${(l&&l.fx)||S.ownerSettings.fx||""}" placeholder="เช่น 33.5"></label></div>
   <p class="small" style="margin:-4px 0 0">${fxLink} · ใช้อัตราเดียวกันกับสินค้าทุกชิ้นในล็อตนี้ ถ้าแก้อัตรา ต้นทุนของทุกชิ้นจะคำนวณใหม่</p>`,
@@ -419,7 +419,7 @@ function lotDialog(id){const l=id?S.lots[id]:null;const n=Object.keys(S.lots).le
       else{const r=S.db.collection("lots").doc();await r.set({name,buyDate,fx,createdAt:Date.now(),ship:null,closed:false});S.lotId=r.id}
       if(buyDate===today()&&fx!==+S.ownerSettings.fx)await S.db.collection("ownerSettings").doc("main").set({...S.ownerSettings,fx,fxAt:Date.now()})},id?"บันทึกล็อตแล้ว":"สร้างล็อตแล้ว")})}
 function itemDialog(lid,id){const it=id?S.items[id]:{},c=id?(S.itemCosts[id]||{}):{},lot=S.lots[lid]||{},sq=id?(soldMap()[id]||0):0;const FX=lotFx(lot)||+c.fx||+S.ownerSettings.fx||0;
-  open(`<h2>${id?"แก้ไขสินค้า":"เพิ่มสินค้าเข้า "+esc(lot.name)}</h2>
+  openDlg(`<h2>${id?"แก้ไขสินค้า":"เพิ่มสินค้าเข้า "+esc(lot.name)}</h2>
   ${S.assets?`<div class="prodrow"><div class="pic" id="ppic">${it.photo?`<img src="${src(it.photo)}" alt="">`:"ไม่มีรูป"}</div><div class="grow"><label>รูปสินค้า<input name="photo" type="file" accept="image/*"></label></div></div>`:""}
   <label>ลักษณะสินค้า<input name="kind" required value="${esc(it.kind||"")}" placeholder="เช่น กระเป๋าสะพาย, น้ำหอม, รองเท้า"></label>
   <label>แบรนด์<input name="brand" value="${esc(it.brand||"")}" placeholder="เช่น Coach"></label>
@@ -456,7 +456,7 @@ function itemDialog(lid,id){const it=id?S.items[id]:{},c=id?(S.itemCosts[id]||{}
     const sug=[20,30,50].map(m=>{const d=1-pct/100-m/100;return d>0?[m,Math.ceil(cost*(1-pct/100)/d/10)*10]:null}).filter(Boolean);
     box.innerHTML=html+`<div class="chips">${sug.map(([m,v])=>`<button type="button" class="chip" data-dlg="fill" data-v="${v}">กำไร ${m}%: ${fmt(v)} ฿</button>`).join("")}</div>`}}
 function shipLotDialog(lid){const l=S.lots[lid],fx=+(l&&l.fx)||+S.ownerSettings.fx||0;
-  open(`<h2>ค่าส่งมาไทย · ${esc(l.name)}</h2><p class="small" style="margin:0">ใส่ค่าส่งของทั้งล็อตครั้งเดียว ระบบหักในสรุปของล็อตนี้</p>
+  openDlg(`<h2>ค่าส่งมาไทย · ${esc(l.name)}</h2><p class="small" style="margin:0">ใส่ค่าส่งของทั้งล็อตครั้งเดียว ระบบหักในสรุปของล็อตนี้</p>
   <label>วันที่ส่งมาไทย<input name="shipDate" type="date" value="${l.shipDate||today()}"></label>
   <div class="two"><label>ค่าส่งทั้งล็อต<input name="amt" type="number" inputmode="decimal" min="0" step="any" required value="${l.ship??""}"></label>
   <label>จ่ายเป็น<select name="unit"><option value="THB">บาท</option><option value="USD">USD</option></select></label></div>
@@ -476,7 +476,7 @@ function saleDialog(editId){const s0=editId?S.sales.find(x=>x.id===editId):null,
    <label>จำนวน (ชิ้น)<input name="qty" type="number" inputmode="numeric" min="1" step="1" value="${qty??1}" required></label>
    <label>ราคาขายต่อชิ้น (บาท)<input name="price" type="number" inputmode="decimal" min="0" step="any" value="${price??""}" required></label></div>`;
   const oldPct={};if(s0)for(const i of s0.items||[])oldPct[i.itemId]=i.pct;
-  open(`<h2>${s0?"แก้ไขออเดอร์":"เพิ่มออเดอร์"}</h2>
+  openDlg(`<h2>${s0?"แก้ไขออเดอร์":"เพิ่มออเดอร์"}</h2>
   <div class="two"><label>วันที่ขาย<input name="date" type="date" required value="${s0?s0.date:today()}"></label>
   <label>เลขออเดอร์<input name="orderNo" required value="${esc(s0?s0.orderNo:genOrderNo(today()))}"></label></div>
   <label>ชื่อลูกค้า<input name="customer" value="${esc(s0?s0.customer:"")}" placeholder="เช่น คุณนิด"></label>
@@ -590,7 +590,7 @@ function pinCard(){const on=hasPin();
 function pinDialog(mode){
   if(!(window.crypto&&crypto.subtle)){toast("อุปกรณ์นี้ไม่รองรับการตั้ง PIN");return}
   const f=(n,l)=>`<label>${l}<input name="${n}" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]{4,8}" maxlength="8" required placeholder="ตัวเลข 4–8 หลัก"></label>`;
-  open(`<h2>${mode==="set"?"ตั้ง PIN":mode==="change"?"เปลี่ยน PIN":"ปิด PIN"}</h2>${mode==="set"?"":f("cur","PIN ปัจจุบัน")}${mode==="off"?"":f("p1","PIN ใหม่")+f("p2","ยืนยัน PIN ใหม่")}${mode==="set"?`<p class="small" style="margin:0">ถ้าลืม PIN ให้ลบฟิลด์ pin ที่ ownerSettings/main บน Firebase Console</p>`:""}`,
+  openDlg(`<h2>${mode==="set"?"ตั้ง PIN":mode==="change"?"เปลี่ยน PIN":"ปิด PIN"}</h2>${mode==="set"?"":f("cur","PIN ปัจจุบัน")}${mode==="off"?"":f("p1","PIN ใหม่")+f("p2","ยืนยัน PIN ใหม่")}${mode==="set"?`<p class="small" style="margin:0">ถ้าลืม PIN ให้ลบฟิลด์ pin ที่ ownerSettings/main บน Firebase Console</p>`:""}`,
   async()=>{const el=body.elements;
     if(mode!=="set"&&!await checkPin(el.cur.value)){toast("PIN ปัจจุบันไม่ถูกต้อง");return false}
     if(mode==="off"){const {pin,...rest}=S.ownerSettings;await guard(()=>S.db.collection("ownerSettings").doc("main").set(rest),"ปิด PIN แล้ว");return}
